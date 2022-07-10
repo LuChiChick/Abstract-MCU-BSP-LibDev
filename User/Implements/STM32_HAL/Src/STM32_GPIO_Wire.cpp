@@ -1,5 +1,29 @@
 #include "STM32_GPIO_Wire.hpp"
 
+/**
+ * 使能GPIO区域时钟
+ * @param GPIOx 引脚区域
+ * @return 无
+ */
+void ENABLE_GPIO_RCC_CLK(GPIO_TypeDef *GPIOx)
+{
+    //匹配开启时钟
+    if (GPIOx == GPIOA)
+        __HAL_RCC_GPIOA_CLK_ENABLE();
+    else if (GPIOx == GPIOB)
+        __HAL_RCC_GPIOB_CLK_ENABLE();
+    else if (GPIOx == GPIOC)
+        __HAL_RCC_GPIOC_CLK_ENABLE();
+    else if (GPIOx == GPIOD)
+        __HAL_RCC_GPIOD_CLK_ENABLE();
+    else if (GPIOx == GPIOE)
+        __HAL_RCC_GPIOE_CLK_ENABLE();
+    //后续板型可自行添加
+    // else if (GPIOx == GPIOF)
+    // __HAL_RCC_GPIOF_CLK_ENABLE();
+    return;
+}
+
 namespace cus
 {
     //默认构造函数
@@ -31,6 +55,8 @@ namespace cus
         this->GPIO_Pin = GPIO_Pin;
         //模式初始记录
         this->Mode = GPIO_WIRE_MODE_UNKNOWN;
+        //开启对应时钟
+        ENABLE_GPIO_RCC_CLK(GPIOx);
         //正确构造
         this->isInit_already = true;
         //返回构造对象
