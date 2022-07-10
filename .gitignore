@@ -1,0 +1,19 @@
+*
+!User/
+!User/Lib/
+
+# 抽象层
+!User/Lib/AbstractLayer/
+!User/Lib/AbstractLayer/Inc/
+!User/Lib/AbstractLayer/Src/
+!User/Lib/AbstractLayer/Inc/**
+!User/Lib/AbstractLayer/Src/**
+
+# 基础IO层
+!User/Lib/BaseIO/
+!User/Lib/BaseIO/Inc/
+!User/Lib/BaseIO/Src/
+!User/Lib/BaseIO/Inc/**
+!User/Lib/BaseIO/Src/**
+
+!.gitignore
