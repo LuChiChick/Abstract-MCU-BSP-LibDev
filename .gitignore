@@ -20,11 +20,11 @@
 
 
 #STM32实现层
-!User/Implements/STM32
-!User/Implements/STM32/Inc/
-!User/Implements/STM32/Src/
-!User/Implements/STM32/Inc/**
-!User/Implements/STM32/Src/**
+!User/Implements/STM32_HAL
+!User/Implements/STM32_HAL/Inc/
+!User/Implements/STM32_HAL/Src/
+!User/Implements/STM32_HAL/Inc/**
+!User/Implements/STM32_HAL/Src/**
 
 #忽略文件
 !.gitignore
