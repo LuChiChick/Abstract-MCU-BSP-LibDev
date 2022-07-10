@@ -28,3 +28,4 @@
 
 #忽略文件
 !.gitignore
+!README.md
