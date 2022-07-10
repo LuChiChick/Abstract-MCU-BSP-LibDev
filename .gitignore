@@ -1,6 +1,8 @@
 *
 !User/
 !User/Lib/
+!User/Implements/
+
 
 # 抽象层
 !User/Lib/AbstractLayer/
@@ -16,4 +18,13 @@
 !User/Lib/BaseIO/Inc/**
 !User/Lib/BaseIO/Src/**
 
+
+#STM32实现层
+!User/Implements/STM32
+!User/Implements/STM32/Inc/
+!User/Implements/STM32/Src/
+!User/Implements/STM32/Inc/**
+!User/Implements/STM32/Src/**
+
+#忽略文件
 !.gitignore
