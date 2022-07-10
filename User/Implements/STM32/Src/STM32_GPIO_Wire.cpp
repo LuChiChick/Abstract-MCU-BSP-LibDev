@@ -38,10 +38,10 @@ namespace cus
     }
 
     /**
-     *   设置引脚输出模式
-     *   @param Mode -引脚模式,
-     *   详见GPIO_Wire_Mode枚举类型
-     *   @return GPIO_Wire_Error 异常抛出
+     * 设置引脚输出模式
+     * @param Mode -引脚模式,
+     * 详见GPIO_Wire_Mode枚举类型
+     * @return GPIO_Wire_Error 异常抛出
      */
     GPIO_Wire_Error STM32_GPIO_Wire::setAs(GPIO_Wire_Mode Mode)
     {
@@ -134,10 +134,10 @@ namespace cus
     }
 
     /**
-     *   输出电平
-     *   @param Level -决定输出的电平高低
-     *   详见GPIO_Wire_Level枚举类型
-     *   @return GPIO_Wire_Error 异常抛出
+     * 输出电平
+     * @param Level -决定输出的电平高低
+     * 详见GPIO_Wire_Level枚举类型
+     * @return GPIO_Wire_Error 异常抛出
      */
     GPIO_Wire_Error STM32_GPIO_Wire::write(GPIO_Wire_Level Level)
     {
@@ -171,8 +171,8 @@ namespace cus
     }
 
     /**
-     *   读取电平高低
-     *   @return GPIO_Wire_Level 电平高低
+     * 读取电平高低
+     * @return GPIO_Wire_Level 电平高低
      */
     GPIO_Wire_Level STM32_GPIO_Wire::readLevel()
     {
@@ -195,8 +195,8 @@ namespace cus
     }
 
     /**
-     *   获取当前模式
-     *   @return GPIO_Wire_Mode 引脚模式
+     * 获取当前模式
+     * @return GPIO_Wire_Mode 引脚模式
      */
     GPIO_Wire_Mode STM32_GPIO_Wire::getMode()
     {

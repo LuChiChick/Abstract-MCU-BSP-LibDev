@@ -10,7 +10,7 @@ extern "C"
 namespace cus
 {
     // GPIO类具体实现
-    class STM32_GPIO_Wire : public abs_GPIO_Wire
+    class STM32_GPIO_Wire : public Abs_GPIO_Wire
     {
     protected:
         bool isInit_already; //是否初正确构造
@@ -38,30 +38,30 @@ namespace cus
         virtual STM32_GPIO_Wire &construct(GPIO_TypeDef *GPIOx, uint16_t GPIO_Pin);
 
         /**
-         *   设置引脚输出模式
-         *   @param Mode -引脚模式,
-         *   详见GPIO_Wire_Mode枚举类型
-         *   @return GPIO_Wire_Error 异常抛出
+         * 设置引脚输出模式
+         * @param Mode -引脚模式,
+         * 详见GPIO_Wire_Mode枚举类型
+         * @return GPIO_Wire_Error 异常抛出
          */
         virtual GPIO_Wire_Error setAs(GPIO_Wire_Mode Mode);
 
         /**
-         *   输出电平
-         *   @param Level -决定输出的电平高低
-         *   详见GPIO_Wire_Level枚举类型
-         *   @return GPIO_Wire_Error 异常抛出
+         * 输出电平
+         * @param Level -决定输出的电平高低
+         * 详见GPIO_Wire_Level枚举类型
+         * @return GPIO_Wire_Error 异常抛出
          */
         virtual GPIO_Wire_Error write(GPIO_Wire_Level Level);
 
         /**
-         *   读取电平高低
-         *   @return GPIO_Wire_Level 电平高低
+         * 读取电平高低
+         * @return GPIO_Wire_Level 电平高低
          */
         virtual GPIO_Wire_Level readLevel();
 
         /**
-         *   获取当前模式
-         *   @return GPIO_Wire_Mode 引脚模式
+         * 获取当前模式
+         * @return GPIO_Wire_Mode 引脚模式
          */
         virtual GPIO_Wire_Mode getMode();
 
