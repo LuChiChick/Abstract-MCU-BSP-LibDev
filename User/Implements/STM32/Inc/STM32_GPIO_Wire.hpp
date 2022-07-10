@@ -21,7 +21,12 @@ namespace cus
     public:
         //默认构造函数
         STM32_GPIO_Wire();
-        //带参构造函数
+
+        /**
+         * 带参构造函数
+         * @param GPIOx 引脚区域
+         * @param GPIO_Pin 引脚编号
+         */
         STM32_GPIO_Wire(GPIO_TypeDef *GPIOx, uint16_t GPIO_Pin);
 
         /**
@@ -35,7 +40,7 @@ namespace cus
         /**
          *   设置引脚输出模式
          *   @param Mode -引脚模式,
-         *   详见GPIO_Mode枚举类型
+         *   详见GPIO_Wire_Mode枚举类型
          *   @return GPIO_Wire_Error 异常抛出
          */
         virtual GPIO_Wire_Error setAs(GPIO_Wire_Mode Mode);
@@ -43,7 +48,7 @@ namespace cus
         /**
          *   输出电平
          *   @param Level -决定输出的电平高低
-         *   详见GPIO_Level枚举类型
+         *   详见GPIO_Wire_Level枚举类型
          *   @return GPIO_Wire_Error 异常抛出
          */
         virtual GPIO_Wire_Error write(GPIO_Wire_Level Level);
