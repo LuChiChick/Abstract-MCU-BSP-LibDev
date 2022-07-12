@@ -19,12 +19,19 @@
 !User/Lib/BaseIO/Src/**
 
 
-#STM32实现层
+#STM32HAL实现层
 !User/Implements/STM32_HAL
 !User/Implements/STM32_HAL/Inc/
 !User/Implements/STM32_HAL/Src/
 !User/Implements/STM32_HAL/Inc/**
 !User/Implements/STM32_HAL/Src/**
+
+#MSP432实现层
+!User/Implements/MSP432
+!User/Implements/MSP432/Inc/
+!User/Implements/MSP432/Src/
+!User/Implements/MSP432/Inc/**
+!User/Implements/MSP432/Src/**
 
 #忽略文件
 !.gitignore
