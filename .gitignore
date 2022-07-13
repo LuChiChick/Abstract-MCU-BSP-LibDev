@@ -18,6 +18,12 @@
 !User/Lib/BaseIO/Inc/**
 !User/Lib/BaseIO/Src/**
 
+# 计算工具类库
+!User/Lib/Calculate/
+!User/Lib/Calculate/Inc/
+!User/Lib/Calculate/Src/
+!User/Lib/Calculate/Inc/**
+!User/Lib/Calculate/Src/**
 
 #STM32HAL实现层
 !User/Implements/STM32_HAL
