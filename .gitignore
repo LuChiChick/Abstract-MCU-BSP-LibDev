@@ -25,6 +25,13 @@
 !User/Lib/Calculate/Inc/**
 !User/Lib/Calculate/Src/**
 
+# 外设类库
+!User/Lib/Peripheral/
+!User/Lib/Peripheral/Inc/
+!User/Lib/Peripheral/Src/
+!User/Lib/Peripheral/Inc/**
+!User/Lib/Peripheral/Src/**
+
 #STM32HAL实现层
 !User/Implements/STM32_HAL
 !User/Implements/STM32_HAL/Inc/
