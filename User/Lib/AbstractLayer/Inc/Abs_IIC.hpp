@@ -20,33 +20,26 @@ namespace cus
         /**
          *   指定目标地址(7位)
          *   @param Aim_addr 目标地址
-         *   @return IIC_Wire_Error异常抛出
+         *   @return IIC_Error异常抛出
          */
         virtual IIC_Error focus_on(uint8_t Aim_addr) = 0;
         /**
          *   设定速度阈值
          *   @param speed_threshold 速度阈值
          */
-        virtual void speedLimit(int speed_threshold) = 0;
-
-        /**
-         * 设置数据缓冲区，用于接收请求的数据
-         * @param lpBuffer 传入缓冲区地址
-         * @param buffer_size 缓冲区大小
-         */
-        virtual void setBuffer(uint8_t *lpBuffer, int buffer_size) = 0;
+        virtual void set_SpeedThreshold(int speed_threshold) = 0;
 
         /**
          *   写入数据，若第一次发起则发送起始信号
          *   之后发起则继续发送
          *   @param data 写入的数据
-         *   @return IIC_Wire_Error异常抛出
+         *   @return IIC_Error异常抛出
          */
         virtual IIC_Error write(uint8_t data) = 0;
         /**
          *   请求数据，自动发送起始信号并请求count组数据后结束，请求内容应填充到buffer
          *   @param count 连续读取的数据量
-         *   @return IIC_Wire_Error异常抛出
+         *   @return IIC_Error异常抛出
          */
         virtual IIC_Error request(uint8_t count) = 0;
         /**

@@ -60,7 +60,7 @@ namespace cus
     /**
      * 指定目标地址(7位)
      * @param Aim_addr 目标地址
-     * @return IIC_Wire_Error异常抛出
+     * @return IIC_Error异常抛出
      */
     IIC_Error Soft_IIC_Master::focus_on(uint8_t Aim_addr)
     {
@@ -97,7 +97,7 @@ namespace cus
      * 写入数据，若第一次发起则发送起始信号
      * 若之后发起则继续发送
      * @param data 写入的数据
-     * @return IIC_Wire_Error异常抛出
+     * @return IIC_Error异常抛出
      */
     IIC_Error Soft_IIC_Master::write(uint8_t data)
     {
@@ -142,7 +142,7 @@ namespace cus
     /**
      * 请求数据，自动发送起始信号并请求count组数据后结束，请求内容应填充到buffer
      * @param count 连续读取的数据量
-     * @return IIC_Wire_Error异常抛出
+     * @return IIC_Error异常抛出
      */
     IIC_Error Soft_IIC_Master::request(uint8_t count)
     {
