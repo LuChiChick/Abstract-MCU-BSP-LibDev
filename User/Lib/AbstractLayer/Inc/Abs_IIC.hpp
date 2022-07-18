@@ -1,5 +1,5 @@
-#ifndef __ABS_IIC__
-#define __ABS_IIC__
+#ifndef __CUS__ABS_IIC__
+#define __CUS__ABS_IIC__
 
 namespace cus
 {

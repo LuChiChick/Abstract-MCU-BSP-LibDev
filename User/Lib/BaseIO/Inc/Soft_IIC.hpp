@@ -1,5 +1,5 @@
-#ifndef __SOFT_IIC__
-#define __SOFT_IIC__
+#ifndef __CUS__SOFT_IIC__
+#define __CUS__SOFT_IIC__
 
 #include "Abs_BaseIO.hpp"
 

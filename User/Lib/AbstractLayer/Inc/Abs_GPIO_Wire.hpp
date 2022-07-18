@@ -1,5 +1,5 @@
-#ifndef __ABS_GPIO_WIRE__
-#define __ABS_GPIO_WIRE__
+#ifndef __CUS__ABS_GPIO_WIRE__
+#define __CUS__ABS_GPIO_WIRE__
 
 #include "stdint.h"
 

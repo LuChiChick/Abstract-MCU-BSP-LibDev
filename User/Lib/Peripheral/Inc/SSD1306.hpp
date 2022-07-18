@@ -1,5 +1,5 @@
-#ifndef __CUS_SSD1306__
-#define __CUS_SSD1306__
+#ifndef __CUS__SSD1306__
+#define __CUS__SSD1306__
 
 #include "Abs_BaseIO.hpp"
 
@@ -23,7 +23,7 @@ namespace cus
         SSD1306_ERROR_SCREEN_ROLL_FAILED,    //滚动屏幕错误
         SSD1306_ERROR_BUFFER_SIZE_INCORRECT, //缓冲区大小不匹配
     };
-    
+
     class SSD1306
     {
     private:
