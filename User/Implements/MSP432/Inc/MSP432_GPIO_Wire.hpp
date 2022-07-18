@@ -1,5 +1,5 @@
-#ifndef __MSP432_GPIO_WIRE__
-#define __MSP432_GPIO_WIRE__
+#ifndef __CUS__MSP432_GPIO_WIRE__
+#define __CUS__MSP432_GPIO_WIRE__
 
 //抽象GPIO类
 #include "Abs_GPIO_Wire.hpp"
