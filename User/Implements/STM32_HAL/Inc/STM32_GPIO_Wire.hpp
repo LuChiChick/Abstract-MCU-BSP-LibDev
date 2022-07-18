@@ -1,5 +1,5 @@
-#ifndef __CUS__STM32_WIRE__
-#define __CUS__STM32_WIRE__
+#ifndef __CUS__STM32_HAL_GPIO_WIRE__
+#define __CUS__STM32_HAL_GPIO_WIRE__
 
 #include "Abs_BaseIO.hpp"
 extern "C"
