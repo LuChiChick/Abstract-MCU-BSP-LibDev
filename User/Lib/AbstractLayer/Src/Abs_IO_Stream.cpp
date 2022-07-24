@@ -110,7 +110,21 @@ namespace cus
         return *this;
     }
 
-    //递归打印整数，整数打印时最高位在前，固使用递归
+    /**
+     * <<运算符重定向
+     * @param num 输出的数字
+     * @return Abs_OStream& 实例自身
+     */
+    Abs_OStream &Abs_OStream::operator<<(const float num)
+    {
+        printf("%f", num);
+        return *this;
+    }
+
+    /**
+     * 递归打印整数
+     * @param num 要打印的整数
+     */
     IO_Stream_Error Abs_OStream::printInteger(int num)
     {
         //处理正负号
@@ -136,7 +150,10 @@ namespace cus
         }
     }
 
-    //打印浮点数
+    /**
+     * 打印浮点数
+     * @param num 要打印的浮点数
+     */
     IO_Stream_Error Abs_OStream::printDecimal(double num)
     {
         //处理原来的整数部分
@@ -168,5 +185,60 @@ namespace cus
     void Abs_OStream::Set_Decimal_Hold(int count)
     {
         DECIMAL_HOLD_MAX = count;
+    }
+
+    /**
+     * >>运算符重定向
+     * @param str 读取字符串
+     * @return Abs_OStream& 实例自身
+     */
+    Abs_IStream &Abs_IStream::operator>>(char *str)
+    {
+        scanf("%s", str);
+        return *this;
+    }
+
+    /**
+     * >>运算符重定向
+     * @param chr 读取字符
+     * @return Abs_OStream& 实例自身
+     */
+    Abs_IStream &Abs_IStream::operator>>(char &chr)
+    {
+        chr = getchar();
+        return *this;
+    }
+
+    /**
+     * >>运算符重定向
+     * @param num 读取数字
+     * @return Abs_OStream& 实例自身
+     */
+    Abs_IStream &Abs_IStream::operator>>(int &num)
+    {
+        scanf("%d", &num);
+        return *this;
+    }
+
+    /**
+     * >>运算符重定向
+     * @param num 读取数字
+     * @return Abs_OStream& 实例自身
+     */
+    Abs_IStream &Abs_IStream::operator>>(double &num)
+    {
+        scanf("%lf", num);
+        return *this;
+    }
+
+    /**
+     * >>运算符重定向
+     * @param num 读取数字
+     * @return Abs_OStream& 实例自身
+     */
+    Abs_IStream &Abs_IStream::operator>>(float &num)
+    {
+        scanf("%f", num);
+        return *this;
     }
 }

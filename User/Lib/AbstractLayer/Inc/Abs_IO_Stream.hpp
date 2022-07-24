@@ -11,14 +11,20 @@ namespace cus
         IO_STREAM_ERROR_PRINTF_FAILED,  //格式化输入输出失败
     };
 
-    //抽象输出流，提供printf及<<重定向运算，可重定义返回类型
+    //抽象输出流，提供printf及<<重定向运算
     class Abs_OStream
     {
         //私有不可覆写基础功能实现，主要是优化printf处理流程
     private:
-        //递归打印整数
+        /**
+         * 递归打印整数
+         * @param num 要打印的整数
+         */
         IO_Stream_Error printInteger(int num);
-        //打印浮点数
+        /**
+         * 打印浮点数
+         * @param num 要打印的浮点数
+         */
         IO_Stream_Error printDecimal(double num);
 
     protected:
@@ -77,12 +83,78 @@ namespace cus
         virtual Abs_OStream &operator<<(const double num);
 
         /**
+         * <<运算符重定向
+         * @param num 输出的数字
+         * @return Abs_OStream& 实例自身
+         */
+        virtual Abs_OStream &operator<<(const float num);
+
+        /**
          *   设置格式化输入输出最大小数位数
          *   @param count 需要设置的小数保留位数
          *   @return 无
          */
         virtual void Set_Decimal_Hold(int BaudRate);
     };
+
+    //抽象输入流，提供scanf及>>重定向运算
+    class Abs_IStream
+    {
+        /**
+         * 获取一个字节数据
+         * @return 获取的字节数据
+         */
+        virtual char getchar() = 0;
+
+        /**
+         *   格式化输入
+         *   @param lpFormatString 格式化输入字符串
+         *   @param ... 要读取的内容参数，支持如下:
+         *   @param -%d 读取整数
+         *   @param -%f 读取单精度浮点数
+         *   @param -%s 读取字符串
+         *   @param -%c 读取字符
+         *   @param -%xx 标准输入输出支持的其他标签
+         *   @return IO_Stream_Error异常抛出
+         */
+        virtual IO_Stream_Error scanf(const char *lpFormatString, ...) = 0;
+
+        /**
+         * >>运算符重定向
+         * @param str 读取字符串
+         * @return Abs_OStream& 实例自身
+         */
+        virtual Abs_IStream &operator>>(char *str);
+
+        /**
+         * >>运算符重定向
+         * @param chr 读取字符
+         * @return Abs_OStream& 实例自身
+         */
+        virtual Abs_IStream &operator>>(char &chr);
+
+        /**
+         * >>运算符重定向
+         * @param num 读取数字
+         * @return Abs_OStream& 实例自身
+         */
+        virtual Abs_IStream &operator>>(int &num);
+
+        /**
+         * >>运算符重定向
+         * @param num 读取数字
+         * @return Abs_OStream& 实例自身
+         */
+        virtual Abs_IStream &operator>>(double &num);
+
+        /**
+         * >>运算符重定向
+         * @param num 读取数字
+         * @return Abs_OStream& 实例自身
+         */
+        virtual Abs_IStream &operator>>(float &num);
+    };
+
 }
 
 #endif
