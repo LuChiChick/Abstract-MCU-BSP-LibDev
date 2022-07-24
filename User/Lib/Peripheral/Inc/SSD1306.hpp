@@ -2,6 +2,7 @@
 #define __CUS__SSD1306__
 
 #include "Abs_BaseIO.hpp"
+#include "Abs_IO_Stream.hpp"
 
 namespace cus
 {
@@ -24,7 +25,7 @@ namespace cus
         SSD1306_ERROR_BUFFER_SIZE_INCORRECT, //缓冲区大小不匹配
     };
 
-    class SSD1306
+    class SSD1306 : public Abs_OStream
     {
     private:
         bool isInit_already; //是否初正确构造
@@ -71,12 +72,7 @@ namespace cus
          * @param y_offest Y坐标
          */
         void drawCharToBuffer(uint8_t x_offest, uint8_t y_offest, char chr);
-        /**
-         *   递归打印整数
-         *   @param num 输出整数
-         *   @return SSD1306_Error异常抛出
-         */
-        SSD1306_Error drawInteger(int num);
+
         /**
          *   指定坐标打印整数,仅用于内部，带有坐标更新
          *   @param cursor_X x指针
@@ -85,12 +81,7 @@ namespace cus
          *   @return SSD1306_Error异常抛出
          */
         SSD1306_Error drawInteger(uint8_t &cursor_X, uint8_t &cursor_Y, int num);
-        /**
-         *   打印浮点数
-         *   @param num 输出浮点数
-         *   @return SSD1306_Error异常抛出
-         */
-        SSD1306_Error drawDecimal(double num);
+
         /**
          *   指定坐标打印浮点数,仅用于内部，带有坐标更新
          *   @param cursor_X x指针
@@ -155,12 +146,14 @@ namespace cus
          *   @return SSD1306_Error异常抛出
          */
         SSD1306_Error setLightBuffer(uint8_t *lpBuffer, uint16_t size);
+
         /**
          *   向屏幕输出一个字符
          *   @param chr 需要打印的字符
-         *   @return SSD1306_Error异常抛出
+         *   @return IO_Stream_Error异常抛出
          */
-        SSD1306_Error putchar(const char chr);
+        virtual IO_Stream_Error putchar(const char chr);
+
         /**
          *   指定坐标打印字符
          *   @param x_offest x坐标
@@ -169,17 +162,7 @@ namespace cus
          *   @return SSD1306_Error异常抛出
          */
         SSD1306_Error putchar(uint8_t x_offest, uint8_t y_offest, const char chr);
-        /**
-         *   基于内部指针的控制台格式化输出
-         *   @param lpFormatString 格式化输出字符串
-         *   @param ... 要打印的内容参数，支持如下:
-         *   @param -%d 输出整数
-         *   @param -%f 输出浮点数
-         *   @param -%s 输出字符串
-         *   @param -%c 输出字符
-         *   @return SSD1306_Error异常抛出
-         */
-        SSD1306_Error printf(const char *lpFormatString, ...);
+
         /**
          *   指定位置格式化输出
          *   @param x_offest x坐标

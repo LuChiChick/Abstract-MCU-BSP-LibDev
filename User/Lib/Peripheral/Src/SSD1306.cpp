@@ -326,9 +326,9 @@ namespace cus
     /**
      *   向屏幕输出一个字符
      *   @param chr 需要打印的字符
-     *   @return SSD1306_Error异常抛出
+     *   @return IO_Stream_Error异常抛出
      */
-    SSD1306_Error SSD1306::putchar(const char chr)
+    IO_Stream_Error SSD1306::putchar(const char chr)
     {
         if (isInit_already)
         {
@@ -340,18 +340,21 @@ namespace cus
                 if (cursor_Y >= SCREEN_Y)
                 {
                     cursor_X = 0;
-                    return screenRoll(ASCII_DATA_POS_WIDTH);
+                    if (screenRoll(ASCII_DATA_POS_WIDTH) != SSD1306_ERROR_NONE)
+                        return IO_STREAM_ERROR_PUTCHAR_FAILED;
+                    else
+                        return IO_STREAM_ERROR_NONE;
                 }
                 else
                     cursor_Y += ASCII_DATA_POS_WIDTH;
                 cursor_X = 0;
-                return SSD1306_ERROR_NONE;
+                return IO_STREAM_ERROR_NONE;
             }
             //处理页溢出
             if (cursor_Y >= SCREEN_Y)
             {
                 if (screenRoll(ASCII_DATA_POS_WIDTH) != SSD1306_ERROR_NONE)
-                    return SSD1306_ERROR_SCREEN_ROLL_FAILED;
+                    return IO_STREAM_ERROR_PUTCHAR_FAILED;
                 cursor_X = 0;
             }
             //处理行溢出
@@ -360,7 +363,7 @@ namespace cus
                 if (cursor_Y + ASCII_DATA_POS_WIDTH >= SCREEN_Y)
                 {
                     if (screenRoll(ASCII_DATA_POS_WIDTH) != SSD1306_ERROR_NONE)
-                        return SSD1306_ERROR_SCREEN_ROLL_FAILED;
+                        return IO_STREAM_ERROR_PUTCHAR_FAILED;
                 }
                 else
                     cursor_Y += ASCII_DATA_POS_WIDTH;
@@ -369,11 +372,11 @@ namespace cus
 
             //打印字符
             if (putchar(cursor_X, cursor_Y, chr) != SSD1306_ERROR_NONE)
-                return SSD1306_ERROR_PRINT_FAILED;
+                return IO_STREAM_ERROR_PUTCHAR_FAILED;
             cursor_X += ASCII_DATA_LENGTH;
-            return SSD1306_ERROR_NONE;
+            return IO_STREAM_ERROR_NONE;
         }
-        return SSD1306_ERROR_UNINITED;
+        return IO_STREAM_ERROR_PUTCHAR_FAILED;
     }
     /**
      *   指定坐标打印字符
@@ -469,33 +472,7 @@ namespace cus
                 buffer[(cursor_Y / ASCII_DATA_POS_WIDTH) * SCREEN_PAGE_ASCII_CHAR_MAX + (cursor_X / ASCII_DATA_LENGTH)] = chr;
         }
     }
-    /**
-     *   递归打印整数
-     *   @param num 输出整数
-     *   @return SSD1306_Error异常抛出
-     */
-    SSD1306_Error SSD1306::drawInteger(int num)
-    {
-        //处理正负号
-        if (num < 0)
-        {
-            if (putchar('-') != SSD1306_ERROR_NONE)
-                return SSD1306_ERROR_PRINT_FAILED;
-            return drawInteger(-num);
-        }
 
-        //处理常规值
-        if (num >= 0 && num < 10) //递归出口
-            return putchar('0' + num);
-        else
-        {
-            //整除10为打印前一位，取余为打印自身
-            if (drawInteger(num / 10) == SSD1306_ERROR_NONE)
-                return drawInteger(num % 10);
-            else
-                return SSD1306_ERROR_PRINT_FAILED;
-        }
-    }
     /**
      *   递归打印整数
      *   @param num 输出整数
@@ -531,30 +508,7 @@ namespace cus
         }
         return SSD1306_ERROR_NONE;
     }
-    /**
-     *   打印浮点数
-     *   @param num 输出浮点数
-     *   @return SSD1306_Error异常抛出
-     */
-    SSD1306_Error SSD1306::drawDecimal(double num)
-    {
-        //处理原来的整数部分
-        if (drawInteger((int)(num * 1.0)) != SSD1306_ERROR_NONE)
-            return SSD1306_ERROR_PRINT_FAILED;
-        num = num - (int)num;
-        if (putchar('.') != SSD1306_ERROR_NONE)
-            return SSD1306_ERROR_PRINT_FAILED;
-        //扩大倍数转将小数部分换成整数来解决问题
-        for (int count = 0; count < DECIMAL_HOLD_MAX; count++)
-            num *= 10;
-        //忽略小鼠部分多余的0
-        while ((int)num % 10 == 0 && (int)num != 0)
-            num = (int)num / 10;
-        //处理正负号
-        if (num < 0)
-            num = -num;
-        return drawInteger((int)num);
-    }
+
     /**
      *   指定坐标打印浮点数,仅用于内部，带有坐标更新
      *   @param x_offest x坐标
@@ -625,66 +579,7 @@ namespace cus
         }
         return SSD1306_ERROR_NONE;
     }
-    /**
-     *   基于内部指针的控制台格式化输出
-     *   @param lpFormatString 格式化输出字符串
-     *   @param ... 要打印的内容参数，支持如下:
-     *   @param -%d 输出整数
-     *   @param -%f 输出浮点数
-     *   @param -%s 输出字符串
-     *   @param -%c 输出字符
-     *   @return SSD1306_Error异常抛出
-     */
-    SSD1306_Error SSD1306::printf(const char *lpFormatString, ...)
-    {
-        //初始化参数列表，指向不定参第一个参数
-        va_list args;
-        va_start(args, lpFormatString);
 
-        //轮询数据
-        while (*lpFormatString != '\0')
-        {
-            if (*lpFormatString == '%')
-            {
-                //筛查格式化标签
-                switch (*(lpFormatString + 1))
-                {
-                //数型
-                case 'd':
-                    if (drawInteger(va_arg(args, int)) != SSD1306_ERROR_NONE)
-                        return SSD1306_ERROR_PRINT_FAILED;
-                    //跃迁格式化字符串指针
-                    lpFormatString += 2;
-                    continue;
-                case 'f':
-                    if (drawDecimal(va_arg(args, double)) != SSD1306_ERROR_NONE)
-                        return SSD1306_ERROR_PRINT_FAILED;
-                    //跃迁格式化字符串指针
-                    lpFormatString += 2;
-                    continue;
-                case 's':
-                    if (printf(va_arg(args, const char *)) != SSD1306_ERROR_NONE)
-                        return SSD1306_ERROR_PRINT_FAILED;
-                    //跃迁格式化字符串指针
-                    lpFormatString += 2;
-                    continue;
-                case 'c':
-                    if (putchar(va_arg(args, int)) != SSD1306_ERROR_NONE)
-                        return SSD1306_ERROR_PRINT_FAILED;
-                    //跃迁格式化字符串指针
-                    lpFormatString += 2;
-                    continue;
-                //不在检测范围内的标签
-                default:
-                    break;
-                }
-            }
-            //打印常规字符
-            if (putchar(*(lpFormatString++)) != SSD1306_ERROR_NONE) //打印并更新指针
-                return SSD1306_ERROR_PRINT_FAILED;
-        }
-        return SSD1306_ERROR_NONE;
-    }
     /**
      *   指定位置格式化输出
      *   @param x_offest x坐标
