@@ -41,6 +41,7 @@ namespace cus
          * 带参构造函数
          * @param EUSCI_Ax_BASE 要开启串口的外设模块
          * @param Baud_Rate 设置的波特率
+         * @arg -仅支持115200和9600
          */
         MSP432_Uart(uint32_t EUSCI_Ax_BASE, uint32_t Baud_Rate);
 
@@ -78,8 +79,20 @@ namespace cus
         virtual IO_Stream_Error scanf(const char *lpFormatString, ...);
 
         /**
+         * 开启结束字符中断
+         * @param End_Char 定义的结束字符
+         * @param lpEUSCI_Ax_End_CallBack 自定义的中断回调函数指针
+         * @arg 必须是void 返回值，参数为void的函数
+         */
+        void Enable_EndChar_Interrupt(const char End_Char, void (*lpEUSCI_Ax_End_CallBack)(void));
+
+        //清理缓冲区
+        void flush();
+
+        /**
          * 设置波特率
          * @param Baud_Rate 要设置的波特率
+         * @arg -仅支持115200和9600
          */
         void set_Baud_Rate(uint32_t Baud_Rate);
     };

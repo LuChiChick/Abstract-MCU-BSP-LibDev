@@ -16,6 +16,18 @@ uint16_t *EUSCI_A1_Buffer_Counter;
 uint16_t *EUSCI_A2_Buffer_Counter;
 uint16_t *EUSCI_A3_Buffer_Counter;
 
+//帧尾回调定义
+char EUSCI_A0_End_Char = '\n';
+char EUSCI_A1_End_Char = '\n';
+char EUSCI_A2_End_Char = '\n';
+char EUSCI_A3_End_Char = '\n';
+
+//帧尾回调函数指针
+void (*lpEUSCI_A0_End_CallBack)(void) = NULL;
+void (*lpEUSCI_A1_End_CallBack)(void) = NULL;
+void (*lpEUSCI_A2_End_CallBack)(void) = NULL;
+void (*lpEUSCI_A3_End_CallBack)(void) = NULL;
+
 // EUSCIA0模块接收中断
 extern "C" void EUSCIA0_IRQHandler(void)
 {
@@ -27,9 +39,17 @@ extern "C" void EUSCIA0_IRQHandler(void)
             //带上\0小于缓冲区长度时
             if ((*EUSCI_A0_Buffer_Counter) + 1 < MSP432_UART_RECEIVE_BUFFER_LENGTH)
             {
+                //保存字符
                 EUSCI_A0_Buffer[*EUSCI_A0_Buffer_Counter] = UART_receiveData(EUSCI_A0_BASE);
+                //递增字节计数
                 (*EUSCI_A0_Buffer_Counter)++;
+                //处理结束中断回调
+                if ((EUSCI_A0_Buffer[(*EUSCI_A0_Buffer_Counter) - 1] == EUSCI_A0_End_Char) && (lpEUSCI_A0_End_CallBack != NULL))
+                    lpEUSCI_A0_End_CallBack();
             }
+            //缓冲区溢出时仅处理结束中断
+            else if ((UART_receiveData(EUSCI_A0_BASE) == EUSCI_A0_End_Char) && (lpEUSCI_A0_End_CallBack != NULL))
+                lpEUSCI_A0_End_CallBack();
         }
     }
 }
@@ -45,9 +65,17 @@ extern "C" void EUSCIA1_IRQHandler(void)
             //带上\0小于缓冲区长度时
             if ((*EUSCI_A1_Buffer_Counter) + 1 < MSP432_UART_RECEIVE_BUFFER_LENGTH)
             {
+                //保存字符
                 EUSCI_A1_Buffer[*EUSCI_A1_Buffer_Counter] = UART_receiveData(EUSCI_A1_BASE);
+                //递增字节计数
                 (*EUSCI_A1_Buffer_Counter)++;
+                //处理结束中断回调
+                if ((EUSCI_A1_Buffer[*EUSCI_A0_Buffer_Counter] == EUSCI_A1_End_Char) && (lpEUSCI_A1_End_CallBack != NULL))
+                    lpEUSCI_A1_End_CallBack();
             }
+            //缓冲区溢出时仅处理结束中断
+            else if ((UART_receiveData(EUSCI_A1_BASE) == EUSCI_A1_End_Char) && (lpEUSCI_A1_End_CallBack != NULL))
+                lpEUSCI_A1_End_CallBack();
         }
     }
 }
@@ -63,9 +91,17 @@ extern "C" void EUSCIA2_IRQHandler(void)
             //带上\0小于缓冲区长度时
             if ((*EUSCI_A2_Buffer_Counter) + 1 < MSP432_UART_RECEIVE_BUFFER_LENGTH)
             {
+                //保存字符
                 EUSCI_A2_Buffer[*EUSCI_A2_Buffer_Counter] = UART_receiveData(EUSCI_A2_BASE);
+                //递增字节计数
                 (*EUSCI_A2_Buffer_Counter)++;
+                //处理结束中断回调
+                if ((EUSCI_A2_Buffer[*EUSCI_A2_Buffer_Counter] == EUSCI_A2_End_Char) && (lpEUSCI_A2_End_CallBack != NULL))
+                    lpEUSCI_A2_End_CallBack();
             }
+            //缓冲区溢出时仅处理结束中断
+            else if ((UART_receiveData(EUSCI_A2_BASE) == EUSCI_A2_End_Char) && (lpEUSCI_A2_End_CallBack != NULL))
+                lpEUSCI_A2_End_CallBack();
         }
     }
 }
@@ -81,9 +117,17 @@ extern "C" void EUSCIA3_IRQHandler(void)
             //带上\0小于缓冲区长度时
             if ((*EUSCI_A3_Buffer_Counter) + 1 < MSP432_UART_RECEIVE_BUFFER_LENGTH)
             {
+                //保存字符
                 EUSCI_A3_Buffer[*EUSCI_A3_Buffer_Counter] = UART_receiveData(EUSCI_A3_BASE);
+                //递增字节计数
                 (*EUSCI_A3_Buffer_Counter)++;
+                //处理结束中断回调
+                if ((EUSCI_A3_Buffer[*EUSCI_A3_Buffer_Counter] == EUSCI_A3_End_Char) && (lpEUSCI_A3_End_CallBack != NULL))
+                    lpEUSCI_A3_End_CallBack();
             }
+            //缓冲区溢出时仅处理结束中断
+            else if ((UART_receiveData(EUSCI_A3_BASE) == EUSCI_A3_End_Char) && (lpEUSCI_A3_End_CallBack != NULL))
+                lpEUSCI_A3_End_CallBack();
         }
     }
 }
@@ -283,10 +327,8 @@ namespace cus
                 break;
             }
 
-            //初始化为0并设置初始化指针
-            memset(buffer, '\0', MSP432_UART_RECEIVE_BUFFER_LENGTH);
-            buffer_counter = 0;
-            lp_Buffer_Head = buffer;
+            //清理缓冲区
+            flush();
 
             //初始化串口
             UART_initModule(EUSCI_Ax_BASE, &uart_config);
@@ -345,9 +387,7 @@ namespace cus
             //检测到消息已经处理完
             if (lp_Buffer_Head[0] == '\0')
             {
-                memset(buffer, '\0', MSP432_UART_RECEIVE_BUFFER_LENGTH);
-                buffer_counter = 0;
-                lp_Buffer_Head = buffer;
+                flush();
                 break;
             }
             else if ((lp_Buffer_Head[0] == ' ') || (lp_Buffer_Head[0] == '\n'))
@@ -385,6 +425,7 @@ namespace cus
                 if (lp_Buffer_Head[0] != '\0')
                 {
                     if (lpFormatString[0] == '%')
+                    {
                         switch (lpFormatString[1])
                         {
                         case 's':
@@ -502,6 +543,11 @@ namespace cus
                         default:
                             lpFormatString++;
                         }
+
+                        //读取到结尾刷新缓冲区
+                        if (lp_Buffer_Head[0] == '\0')
+                            flush();
+                    }
                 }
                 else
                     return IO_STREAM_ERROR_SCANF_FAILED;
@@ -510,5 +556,49 @@ namespace cus
         }
         else
             return IO_STREAM_ERROR_SCANF_FAILED;
+    }
+
+    /**
+     * 开启结束字符中断
+     * @param End_Char 定义的结束字符
+     * @param lpEUSCI_Ax_End_CallBack 自定义的中断回调函数指针
+     * @arg 必须是void 返回值，参数为void的函数
+     */
+    void MSP432_Uart::Enable_EndChar_Interrupt(const char End_Char, void (*lpEUSCI_Ax_End_CallBack)(void))
+    {
+        if (isInit_already)
+        {
+            //清理缓冲区
+            // flush();
+            //设置定义
+            switch (EUSCI_Ax_BASE)
+            {
+            case EUSCI_A0_BASE:
+                EUSCI_A0_End_Char = End_Char;
+                lpEUSCI_A0_End_CallBack = lpEUSCI_Ax_End_CallBack;
+                break;
+            case EUSCI_A1_BASE:
+                EUSCI_A1_End_Char = End_Char;
+                lpEUSCI_A1_End_CallBack = lpEUSCI_Ax_End_CallBack;
+                break;
+            case EUSCI_A2_BASE:
+                EUSCI_A2_End_Char = End_Char;
+                lpEUSCI_A2_End_CallBack = lpEUSCI_Ax_End_CallBack;
+                break;
+            case EUSCI_A3_BASE:
+                EUSCI_A3_End_Char = End_Char;
+                lpEUSCI_A3_End_CallBack = lpEUSCI_Ax_End_CallBack;
+                break;
+            }
+        }
+    }
+
+    //清理缓冲区
+    void MSP432_Uart::flush()
+    {
+        //初始化为0并设置初始化指针
+        memset(buffer, '\0', MSP432_UART_RECEIVE_BUFFER_LENGTH);
+        buffer_counter = 0;
+        lp_Buffer_Head = buffer;
     }
 }
