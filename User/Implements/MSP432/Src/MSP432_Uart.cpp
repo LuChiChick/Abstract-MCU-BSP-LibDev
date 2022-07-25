@@ -70,7 +70,7 @@ extern "C" void EUSCIA1_IRQHandler(void)
                 //递增字节计数
                 (*EUSCI_A1_Buffer_Counter)++;
                 //处理结束中断回调
-                if ((EUSCI_A1_Buffer[*EUSCI_A0_Buffer_Counter] == EUSCI_A1_End_Char) && (lpEUSCI_A1_End_CallBack != NULL))
+                if ((EUSCI_A1_Buffer[*EUSCI_A1_Buffer_Counter] == EUSCI_A1_End_Char) && (lpEUSCI_A1_End_CallBack != NULL))
                     lpEUSCI_A1_End_CallBack();
             }
             //缓冲区溢出时仅处理结束中断
