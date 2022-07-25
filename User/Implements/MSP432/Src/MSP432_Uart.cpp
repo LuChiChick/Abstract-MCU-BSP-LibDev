@@ -1,5 +1,92 @@
 //抽象类库IO流包含
 #include "MSP432_Uart.hpp"
+#include "stdio.h"
+#include "string.h"
+#include "stdarg.h"
+
+// Uart缓冲区
+char *EUSCI_A0_Buffer = NULL;
+char *EUSCI_A1_Buffer = NULL;
+char *EUSCI_A2_Buffer = NULL;
+char *EUSCI_A3_Buffer = NULL;
+
+// Uart缓冲区数据计数
+uint16_t *EUSCI_A0_Buffer_Counter;
+uint16_t *EUSCI_A1_Buffer_Counter;
+uint16_t *EUSCI_A2_Buffer_Counter;
+uint16_t *EUSCI_A3_Buffer_Counter;
+
+// EUSCIA0模块接收中断
+extern "C" void EUSCIA0_IRQHandler(void)
+{
+    if (UART_getEnabledInterruptStatus(EUSCI_A0_BASE) & EUSCI_A_UART_RECEIVE_INTERRUPT_FLAG)
+    {
+        //查看缓冲区是否存在
+        if (EUSCI_A0_Buffer != NULL)
+        {
+            //带上\0小于缓冲区长度时
+            if ((*EUSCI_A0_Buffer_Counter) + 1 < MSP432_UART_RECEIVE_BUFFER_LENGTH)
+            {
+                EUSCI_A0_Buffer[*EUSCI_A0_Buffer_Counter] = UART_receiveData(EUSCI_A0_BASE);
+                (*EUSCI_A0_Buffer_Counter)++;
+            }
+        }
+    }
+}
+
+// EUSCIA1模块接收中断
+extern "C" void EUSCIA1_IRQHandler(void)
+{
+    if (UART_getEnabledInterruptStatus(EUSCI_A1_BASE) & EUSCI_A_UART_RECEIVE_INTERRUPT_FLAG)
+    {
+        //查看缓冲区是否存在
+        if (EUSCI_A1_Buffer != NULL)
+        {
+            //带上\0小于缓冲区长度时
+            if ((*EUSCI_A1_Buffer_Counter) + 1 < MSP432_UART_RECEIVE_BUFFER_LENGTH)
+            {
+                EUSCI_A1_Buffer[*EUSCI_A1_Buffer_Counter] = UART_receiveData(EUSCI_A1_BASE);
+                (*EUSCI_A1_Buffer_Counter)++;
+            }
+        }
+    }
+}
+
+// EUSCIA2模块接收中断
+extern "C" void EUSCIA2_IRQHandler(void)
+{
+    if (UART_getEnabledInterruptStatus(EUSCI_A2_BASE) & EUSCI_A_UART_RECEIVE_INTERRUPT_FLAG)
+    {
+        //查看缓冲区是否存在
+        if (EUSCI_A2_Buffer != NULL)
+        {
+            //带上\0小于缓冲区长度时
+            if ((*EUSCI_A2_Buffer_Counter) + 1 < MSP432_UART_RECEIVE_BUFFER_LENGTH)
+            {
+                EUSCI_A2_Buffer[*EUSCI_A2_Buffer_Counter] = UART_receiveData(EUSCI_A2_BASE);
+                (*EUSCI_A2_Buffer_Counter)++;
+            }
+        }
+    }
+}
+
+// EUSCIA3模块接收中断
+extern "C" void EUSCIA3_IRQHandler(void)
+{
+    if (UART_getEnabledInterruptStatus(EUSCI_A3_BASE) & EUSCI_A_UART_RECEIVE_INTERRUPT_FLAG)
+    {
+        //查看缓冲区是否存在
+        if (EUSCI_A3_Buffer != NULL)
+        {
+            //带上\0小于缓冲区长度时
+            if ((*EUSCI_A3_Buffer_Counter) + 1 < MSP432_UART_RECEIVE_BUFFER_LENGTH)
+            {
+                EUSCI_A3_Buffer[*EUSCI_A3_Buffer_Counter] = UART_receiveData(EUSCI_A3_BASE);
+                (*EUSCI_A3_Buffer_Counter)++;
+            }
+        }
+    }
+}
 
 namespace cus
 {
@@ -15,12 +102,24 @@ namespace cus
      */
     MSP432_Uart::MSP432_Uart(uint32_t EUSCI_Ax_BASE, uint32_t Baud_Rate)
     {
+        construct(EUSCI_Ax_BASE, Baud_Rate);
+    }
+
+    /**
+     * 构造&类初始化
+     * @param EUSCI_Ax_BASE 要开启串口的外设模块
+     * @param Baud_Rate 设置的波特率
+     */
+    MSP432_Uart &MSP432_Uart::construct(uint32_t EUSCI_Ax_BASE, uint32_t Baud_Rate)
+    {
+        // UART模块初始化结构体
+        eUSCI_UART_ConfigV1 uart_config;
         //初始化EUSCIA模块串口
         uart_config.selectClockSource = EUSCI_A_UART_CLOCKSOURCE_SMCLK;        //选择时钟源
         uart_config.parity = EUSCI_A_UART_NO_PARITY;                           //无校验模式
         uart_config.msborLsbFirst = EUSCI_A_UART_LSB_FIRST;                    //低位在前模式
         uart_config.numberofStopBits = EUSCI_A_UART_ONE_STOP_BIT;              //一位停止位模式
-        uart_config.uartMode = EUSCI_A_UART_AUTOMATIC_BAUDRATE_DETECTION_MODE; //自动猜测波特率模式
+        uart_config.uartMode = EUSCI_A_UART_AUTOMATIC_BAUDRATE_DETECTION_MODE; //串口波特率自动匹配模式
         uart_config.dataLength = EUSCI_A_UART_8_BIT_LEN;                       // 8位数据模式
 
         //要筛选时钟晶振频率信号决定配置结构体参数，经TI官方计算工具计算，目标波特率115200
@@ -66,7 +165,7 @@ namespace cus
                 else
                 {
                     isInit_already = false;
-                    return;
+                    return *this;
                 }
             }
 
@@ -91,7 +190,7 @@ namespace cus
                 else
                 {
                     isInit_already = false;
-                    return;
+                    return *this;
                 }
             }
 
@@ -116,7 +215,7 @@ namespace cus
                 else
                 {
                     isInit_already = false;
-                    return;
+                    return *this;
                 }
             }
 
@@ -141,65 +240,72 @@ namespace cus
                 else
                 {
                     isInit_already = false;
-                    return;
+                    return *this;
                 }
             }
         }
 
-        //筛查需要配置的EUSCI模块
-        switch (EUSCI_Ax_BASE)
+        //检查是否正确模块
+        if (EUSCI_Ax_BASE == EUSCI_A0_BASE || EUSCI_Ax_BASE == EUSCI_A1_BASE || EUSCI_Ax_BASE == EUSCI_A2_BASE || EUSCI_Ax_BASE == EUSCI_A3_BASE)
         {
-        case EUSCI_A0_BASE:
-            //开启IO模块第二功能
-            GPIO_setAsPeripheralModuleFunctionOutputPin(GPIO_PORT_P1, GPIO_PIN3, GPIO_PRIMARY_MODULE_FUNCTION);
-            GPIO_setAsPeripheralModuleFunctionInputPin(GPIO_PORT_P1, GPIO_PIN3, GPIO_PRIMARY_MODULE_FUNCTION);
+            //筛查需要配置的EUSCI模块
+            switch (EUSCI_Ax_BASE)
+            {
+            case EUSCI_A0_BASE:
+                //开启IO模块第二功能
+                GPIO_setAsPeripheralModuleFunctionOutputPin(GPIO_PORT_P1, GPIO_PIN2, GPIO_PRIMARY_MODULE_FUNCTION);
+                GPIO_setAsPeripheralModuleFunctionInputPin(GPIO_PORT_P1, GPIO_PIN3, GPIO_PRIMARY_MODULE_FUNCTION);
+                EUSCI_A0_Buffer = buffer;
+                EUSCI_A0_Buffer_Counter = &buffer_counter;
+                //开启串口端口中断
+                Interrupt_enableInterrupt(INT_EUSCIA0);
+                break;
+            case EUSCI_A1_BASE:
+                //开启IO模块第二功能
+                GPIO_setAsPeripheralModuleFunctionOutputPin(GPIO_PORT_P2, GPIO_PIN2, GPIO_PRIMARY_MODULE_FUNCTION);
+                GPIO_setAsPeripheralModuleFunctionInputPin(GPIO_PORT_P2, GPIO_PIN3, GPIO_PRIMARY_MODULE_FUNCTION);
+                //开启串口端口中断
+                Interrupt_enableInterrupt(INT_EUSCIA1);
+                break;
+            case EUSCI_A2_BASE:
+                //开启IO模块第二功能
+                GPIO_setAsPeripheralModuleFunctionOutputPin(GPIO_PORT_P3, GPIO_PIN2, GPIO_PRIMARY_MODULE_FUNCTION);
+                GPIO_setAsPeripheralModuleFunctionInputPin(GPIO_PORT_P3, GPIO_PIN3, GPIO_PRIMARY_MODULE_FUNCTION);
+                //开启串口端口中断
+                Interrupt_enableInterrupt(INT_EUSCIA2);
+                break;
+            case EUSCI_A3_BASE:
+                //开启IO模块第二功能
+                GPIO_setAsPeripheralModuleFunctionOutputPin(GPIO_PORT_P9, GPIO_PIN6, GPIO_PRIMARY_MODULE_FUNCTION);
+                GPIO_setAsPeripheralModuleFunctionInputPin(GPIO_PORT_P9, GPIO_PIN7, GPIO_PRIMARY_MODULE_FUNCTION);
+                //开启串口端口中断
+                Interrupt_enableInterrupt(INT_EUSCIA3);
+                break;
+            }
+
+            //初始化为0并设置初始化指针
+            memset(buffer, '\0', MSP432_UART_RECEIVE_BUFFER_LENGTH);
+            buffer_counter = 0;
+            lp_Buffer_Head = buffer;
+
             //初始化串口
             UART_initModule(EUSCI_Ax_BASE, &uart_config);
             //开启串口
             UART_enableModule(EUSCI_Ax_BASE);
+            //开启串口中断
+            UART_enableInterrupt(EUSCI_Ax_BASE, EUSCI_A_UART_RECEIVE_INTERRUPT);
+            //开启总中断
+            Interrupt_enableMaster();
             //信息记录完成初始化
             this->EUSCI_Ax_BASE = EUSCI_Ax_BASE;
             isInit_already = true;
-            break;
-        case EUSCI_A1_BASE:
-            //开启IO模块第二功能
-            GPIO_setAsPeripheralModuleFunctionOutputPin(GPIO_PORT_P2, GPIO_PIN2, GPIO_PRIMARY_MODULE_FUNCTION);
-            GPIO_setAsPeripheralModuleFunctionInputPin(GPIO_PORT_P2, GPIO_PIN3, GPIO_PRIMARY_MODULE_FUNCTION);
-            //初始化串口
-            UART_initModule(EUSCI_Ax_BASE, &uart_config);
-            //开启串口
-            UART_enableModule(EUSCI_Ax_BASE);
-            //信息记录完成初始化
-            this->EUSCI_Ax_BASE = EUSCI_Ax_BASE;
-            isInit_already = true;
-            break;
-        case EUSCI_A2_BASE:
-            //开启IO模块第二功能
-            GPIO_setAsPeripheralModuleFunctionOutputPin(GPIO_PORT_P3, GPIO_PIN2, GPIO_PRIMARY_MODULE_FUNCTION);
-            GPIO_setAsPeripheralModuleFunctionInputPin(GPIO_PORT_P3, GPIO_PIN3, GPIO_PRIMARY_MODULE_FUNCTION);
-            //初始化串口
-            UART_initModule(EUSCI_Ax_BASE, &uart_config);
-            //开启串口
-            UART_enableModule(EUSCI_Ax_BASE);
-            //信息记录完成初始化
-            this->EUSCI_Ax_BASE = EUSCI_Ax_BASE;
-            isInit_already = true;
-            break;
-        case EUSCI_A3_BASE:
-            //开启IO模块第二功能
-            GPIO_setAsPeripheralModuleFunctionOutputPin(GPIO_PORT_P9, GPIO_PIN6, GPIO_PRIMARY_MODULE_FUNCTION);
-            GPIO_setAsPeripheralModuleFunctionInputPin(GPIO_PORT_P9, GPIO_PIN7, GPIO_PRIMARY_MODULE_FUNCTION);
-            //初始化串口
-            UART_initModule(EUSCI_Ax_BASE, &uart_config);
-            //开启串口
-            UART_enableModule(EUSCI_Ax_BASE);
-            //信息记录完成初始化
-            this->EUSCI_Ax_BASE = EUSCI_Ax_BASE;
-            isInit_already = true;
-            break;
-        default:
+        }
+        else
+        {
             isInit_already = false;
         }
+
+        return *this;
     }
 
     /**
@@ -218,4 +324,191 @@ namespace cus
         else
             return IO_STREAM_ERROR_PUTCHAR_FAILED;
     };
+
+    /**
+     * 获取一个字节数据
+     * @return 获取的字节数据
+     */
+    char MSP432_Uart::getchar()
+    {
+        char chr;
+        this->scanf("%c", &chr);
+        return chr;
+    }
+
+    //缓冲区头滚动
+    void MSP432_Uart::lpBuffer_Head_roll()
+    {
+        while (1)
+        {
+            lp_Buffer_Head++;
+            //检测到消息已经处理完
+            if (lp_Buffer_Head[0] == '\0')
+            {
+                memset(buffer, '\0', MSP432_UART_RECEIVE_BUFFER_LENGTH);
+                buffer_counter = 0;
+                lp_Buffer_Head = buffer;
+                break;
+            }
+            else if ((lp_Buffer_Head[0] == ' ') || (lp_Buffer_Head[0] == '\n'))
+            {
+                lp_Buffer_Head++;
+                break;
+            }
+        }
+    }
+
+    /**
+     *   格式化输入
+     *   @param lpFormatString 格式化输入字符串
+     *   @param ... 要读取的内容参数，支持如下:
+     *   @param -%d 读取整数
+     *   @param -%f 读取单精度浮点数
+     *   @param -%lf 读取双精度浮点数
+     *   @param -%s 读取字符串
+     *   @param -%c 读取字符
+     *   @return IO_Stream_Error异常抛出
+     */
+    IO_Stream_Error MSP432_Uart::scanf(const char *lpFormatString, ...)
+    {
+        //检查初始化
+        if (isInit_already)
+        {
+            //初始化参数列表，指向不定参第一个参数
+            va_list args;
+            va_start(args, lpFormatString);
+
+            //探查读取标签
+            while (lpFormatString[0] != '\0')
+            {
+                //检查是否读取结束
+                if (lp_Buffer_Head[0] != '\0')
+                {
+                    if (lpFormatString[0] == '%')
+                        switch (lpFormatString[1])
+                        {
+                        case 's':
+                        {
+                            sscanf(lp_Buffer_Head, "%s", va_arg(args, char *));
+                            lpFormatString += 2;
+                            lpBuffer_Head_roll();
+                            break;
+                        }
+                        case 'c':
+                        {
+                            sscanf(lp_Buffer_Head, "%c", va_arg(args, char *));
+                            lp_Buffer_Head++;
+                            lpFormatString += 2;
+                            break;
+                        }
+                        case 'd':
+                        {
+                            sscanf(lp_Buffer_Head, "%d", va_arg(args, int *));
+                            lpFormatString += 2;
+                            lpBuffer_Head_roll();
+                            break;
+                        }
+                        case 'f':
+                        {
+                            //浮点数指针
+                            float *lpNum = va_arg(args, float *);
+                            //临时整型变量，应对arm下sscanf无法读取浮点数的问题
+                            int temp;
+                            sscanf(lp_Buffer_Head, "%d", &temp);
+                            *lpNum = 0.0f + temp;
+
+                            //缓冲区头指针移动到小数点之后
+                            while (1)
+                            {
+                                if (lp_Buffer_Head[0] == '.') //检查空格
+                                {
+                                    lp_Buffer_Head++;
+                                    if (lp_Buffer_Head[0] == '\0' || lp_Buffer_Head[0] == '\n')
+                                        return IO_STREAM_ERROR_SCANF_FAILED;
+                                    else
+                                        break;
+                                }
+                                else if (lp_Buffer_Head[0] == ' ') //检查空格
+                                    break;
+                                else if (lp_Buffer_Head[0] == '\0' || lp_Buffer_Head[0] == '\n')
+                                    return IO_STREAM_ERROR_SCANF_FAILED;
+                                else
+                                    lp_Buffer_Head++;
+                            }
+
+                            //筛查是否遇到空格
+                            if (lp_Buffer_Head[0] != ' ')
+                            {
+                                //读取余下的整数
+                                sscanf(lp_Buffer_Head, "%d", &temp);
+                                //临时存储浮点值
+                                float container = 0.0f + temp;
+                                //循环降次
+                                for (int count = temp; count > 0; count /= 10)
+                                    container /= 10;
+                                //加上小数部分
+                                *lpNum += container;
+                            }
+                            lpFormatString += 2;
+                            lpBuffer_Head_roll();
+                            break;
+                        }
+                        case 'l':
+                            if (lpFormatString[2] == 'f')
+                            {
+                                //浮点数指针
+                                double *lpNum = va_arg(args, double *);
+                                //临时整型变量，应对arm下sscanf无法读取浮点数的问题
+                                int temp;
+                                sscanf(lp_Buffer_Head, "%d", &temp);
+                                *lpNum = 0.0 + temp;
+
+                                //缓冲区头指针移动到小数点之后
+                                while (1)
+                                {
+                                    if (lp_Buffer_Head[0] == '.') //检查空格
+                                    {
+                                        lp_Buffer_Head++;
+                                        if (lp_Buffer_Head[0] == '\0' || lp_Buffer_Head[0] == '\n')
+                                            return IO_STREAM_ERROR_SCANF_FAILED;
+                                        else
+                                            break;
+                                    }
+                                    else if (lp_Buffer_Head[0] == ' ') //检查空格
+                                        break;
+                                    else if (lp_Buffer_Head[0] == '\0' || lp_Buffer_Head[0] == '\n')
+                                        return IO_STREAM_ERROR_SCANF_FAILED;
+                                    else
+                                        lp_Buffer_Head++;
+                                }
+
+                                //筛查是否遇到空格
+                                if (lp_Buffer_Head[0] != ' ')
+                                {
+                                    //读取余下的整数
+                                    sscanf(lp_Buffer_Head, "%d", &temp);
+                                    //临时存储浮点值
+                                    double container = 0.0 + temp;
+                                    //循环降次
+                                    for (int count = temp; count > 0; count /= 10)
+                                        container /= 10;
+                                    //加上小数部分
+                                    *lpNum += container;
+                                }
+                                lpFormatString += 3;
+                                lpBuffer_Head_roll();
+                                break;
+                            }
+                        default:
+                            lpFormatString++;
+                        }
+                }
+                else
+                    return IO_STREAM_ERROR_SCANF_FAILED;
+            }
+            return IO_STREAM_ERROR_NONE;
+        }
+        else
+            return IO_STREAM_ERROR_SCANF_FAILED;
+    }
 }
