@@ -1,6 +1,5 @@
 //抽象类库IO流包含
 #include "MSP432_Uart.hpp"
-#include "stdio.h"
 #include "string.h"
 #include "stdarg.h"
 
@@ -383,7 +382,6 @@ namespace cus
     {
         while (1)
         {
-            lp_Buffer_Head++;
             //检测到消息已经处理完
             if (lp_Buffer_Head[0] == '\0')
             {
@@ -393,8 +391,13 @@ namespace cus
             else if ((lp_Buffer_Head[0] == ' ') || (lp_Buffer_Head[0] == '\n'))
             {
                 lp_Buffer_Head++;
-                break;
+                if ((lp_Buffer_Head[0] == ' ') || (lp_Buffer_Head[0] == '\n'))
+                    continue;
+                else
+                    break;
             }
+            //有其作用，用于筛查其他字符诸如'\r'
+            lp_Buffer_Head++;
         }
     }
 
@@ -430,21 +433,83 @@ namespace cus
                         {
                         case 's':
                         {
-                            sscanf(lp_Buffer_Head, "%s", va_arg(args, char *));
+                            char *lpString = va_arg(args, char *);
+                            //掠过空格
+                            while (lp_Buffer_Head[0] == ' ')
+                                lp_Buffer_Head++;
+                            //循环读取内容
+                            while (1)
+                            {
+                                //检查是否结束
+                                if (lp_Buffer_Head[0] == ' ' || lp_Buffer_Head[0] == '\0' || lp_Buffer_Head[0] == '\n')
+                                    break;
+                                else
+                                {
+                                    //文字拷贝
+                                    lpString[0] = lp_Buffer_Head[0];
+                                    //递增指针
+                                    lpString++;
+                                    lp_Buffer_Head++;
+                                }
+                            }
+                            //格式化字符串指针递增
                             lpFormatString += 2;
                             lpBuffer_Head_roll();
                             break;
                         }
                         case 'c':
                         {
-                            sscanf(lp_Buffer_Head, "%c", va_arg(args, char *));
-                            lp_Buffer_Head++;
+                            char *lpChar = va_arg(args, char *);
+                            //检查下一位是否结束
+                            if (lp_Buffer_Head[0] == '\0')
+                                break;
+                            else
+                            {
+                                //读取值
+                                lpChar[0] = lp_Buffer_Head[0];
+                                //转移缓冲区指针
+                                lp_Buffer_Head++;
+                                while (lp_Buffer_Head[0] == ' ' || lp_Buffer_Head[0] == '\n')
+                                    lp_Buffer_Head++;
+                            }
+                            //格式化字符串指针递增
                             lpFormatString += 2;
                             break;
                         }
                         case 'd':
                         {
-                            sscanf(lp_Buffer_Head, "%d", va_arg(args, int *));
+                            //取出指针
+                            int *lpNum = va_arg(args, int *);
+                            lpNum[0] = 0;
+                            //掠过空格
+                            while (lp_Buffer_Head[0] == ' ')
+                                lp_Buffer_Head++;
+                            bool MinusNum = false;
+                            //检查是否有正负号
+                            if (lp_Buffer_Head[0] == '-')
+                            {
+                                MinusNum = true;
+                                lp_Buffer_Head++;
+                            }
+                            //循环读取内容
+                            while (1)
+                            {
+
+                                //检查是否结束
+                                if (lp_Buffer_Head[0] < '0' || lp_Buffer_Head[0] > '9')
+                                    break;
+                                else
+                                {
+                                    //读取数字
+                                    lpNum[0] *= 10;
+                                    lpNum[0] += lp_Buffer_Head[0] - '0';
+                                    //递增指针
+                                    lp_Buffer_Head++;
+                                }
+                            }
+                            //匹配正负号
+                            if (MinusNum)
+                                lpNum[0] = -lpNum[0];
                             lpFormatString += 2;
                             lpBuffer_Head_roll();
                             break;
@@ -453,10 +518,43 @@ namespace cus
                         {
                             //浮点数指针
                             float *lpNum = va_arg(args, float *);
-                            //临时整型变量，应对arm下sscanf无法读取浮点数的问题
-                            int temp;
-                            sscanf(lp_Buffer_Head, "%d", &temp);
-                            *lpNum = 0.0f + temp;
+                            //读取整数部分
+                            {
+                                //临时整型变量，应对arm下sscanf无法读取浮点数及Keil使用sscanf卡住的的问题
+                                int temp = 0;
+                                //掠过空格
+                                while (lp_Buffer_Head[0] == ' ')
+                                    lp_Buffer_Head++;
+                                bool MinusNum = false;
+                                //检查是否有正负号
+                                if (lp_Buffer_Head[0] == '-')
+                                {
+                                    MinusNum = true;
+                                    lp_Buffer_Head++;
+                                }
+                                //循环读取内容
+                                while (1)
+                                {
+
+                                    //检查是否结束
+                                    if (lp_Buffer_Head[0] < '0' || lp_Buffer_Head[0] > '9')
+                                        break;
+                                    else
+                                    {
+                                        //读取数字
+                                        temp *= 10;
+                                        temp += lp_Buffer_Head[0] - '0';
+                                        //递增指针
+                                        lp_Buffer_Head++;
+                                    }
+                                }
+                                //匹配正负号
+                                if (MinusNum)
+                                    temp = -temp;
+
+                                //读取浮点数
+                                *lpNum = 0.0f + temp;
+                            }
 
                             //缓冲区头指针移动到小数点之后
                             while (1)
@@ -480,13 +578,46 @@ namespace cus
                             //筛查是否遇到空格
                             if (lp_Buffer_Head[0] != ' ')
                             {
-                                //读取余下的整数
-                                sscanf(lp_Buffer_Head, "%d", &temp);
                                 //临时存储浮点值
-                                float container = 0.0f + temp;
+                                float container;
+
+                                //临时整型变量，应对arm下sscanf无法读取浮点数及Keil使用sscanf卡住的的问题
+                                int temp = 0;
+                                //掠过空格
+                                while (lp_Buffer_Head[0] == ' ')
+                                    lp_Buffer_Head++;
+                                bool MinusNum = false;
+                                //检查是否有正负号
+                                if (lp_Buffer_Head[0] == '-')
+                                {
+                                    MinusNum = true;
+                                    lp_Buffer_Head++;
+                                }
+                                //循环读取内容
+                                while (1)
+                                {
+
+                                    //检查是否结束
+                                    if (lp_Buffer_Head[0] < '0' || lp_Buffer_Head[0] > '9')
+                                        break;
+                                    else
+                                    {
+                                        //读取数字
+                                        temp *= 10;
+                                        temp += lp_Buffer_Head[0] - '0';
+                                        //递增指针
+                                        lp_Buffer_Head++;
+                                    }
+                                }
+                                //匹配正负号
+                                if (MinusNum)
+                                    temp = -temp;
+                                //临时值
+                                container = 0.0f + temp;
                                 //循环降次
                                 for (int count = temp; count > 0; count /= 10)
                                     container /= 10;
+
                                 //加上小数部分
                                 *lpNum += container;
                             }
@@ -499,10 +630,43 @@ namespace cus
                             {
                                 //浮点数指针
                                 double *lpNum = va_arg(args, double *);
-                                //临时整型变量，应对arm下sscanf无法读取浮点数的问题
-                                int temp;
-                                sscanf(lp_Buffer_Head, "%d", &temp);
-                                *lpNum = 0.0 + temp;
+                                //读取整数部分
+                                {
+                                    //临时整型变量，应对arm下sscanf无法读取浮点数及Keil使用sscanf卡住的的问题
+                                    int temp = 0;
+                                    //掠过空格
+                                    while (lp_Buffer_Head[0] == ' ')
+                                        lp_Buffer_Head++;
+                                    bool MinusNum = false;
+                                    //检查是否有正负号
+                                    if (lp_Buffer_Head[0] == '-')
+                                    {
+                                        MinusNum = true;
+                                        lp_Buffer_Head++;
+                                    }
+                                    //循环读取内容
+                                    while (1)
+                                    {
+
+                                        //检查是否结束
+                                        if (lp_Buffer_Head[0] < '0' || lp_Buffer_Head[0] > '9')
+                                            break;
+                                        else
+                                        {
+                                            //读取数字
+                                            temp *= 10;
+                                            temp += lp_Buffer_Head[0] - '0';
+                                            //递增指针
+                                            lp_Buffer_Head++;
+                                        }
+                                    }
+                                    //匹配正负号
+                                    if (MinusNum)
+                                        temp = -temp;
+
+                                    //读取浮点数
+                                    *lpNum = 0.0f + temp;
+                                }
 
                                 //缓冲区头指针移动到小数点之后
                                 while (1)
@@ -526,13 +690,46 @@ namespace cus
                                 //筛查是否遇到空格
                                 if (lp_Buffer_Head[0] != ' ')
                                 {
-                                    //读取余下的整数
-                                    sscanf(lp_Buffer_Head, "%d", &temp);
                                     //临时存储浮点值
-                                    double container = 0.0 + temp;
+                                    float container;
+
+                                    //临时整型变量，应对arm下sscanf无法读取浮点数及Keil使用sscanf卡住的的问题
+                                    int temp = 0;
+                                    //掠过空格
+                                    while (lp_Buffer_Head[0] == ' ')
+                                        lp_Buffer_Head++;
+                                    bool MinusNum = false;
+                                    //检查是否有正负号
+                                    if (lp_Buffer_Head[0] == '-')
+                                    {
+                                        MinusNum = true;
+                                        lp_Buffer_Head++;
+                                    }
+                                    //循环读取内容
+                                    while (1)
+                                    {
+
+                                        //检查是否结束
+                                        if (lp_Buffer_Head[0] < '0' || lp_Buffer_Head[0] > '9')
+                                            break;
+                                        else
+                                        {
+                                            //读取数字
+                                            temp *= 10;
+                                            temp += lp_Buffer_Head[0] - '0';
+                                            //递增指针
+                                            lp_Buffer_Head++;
+                                        }
+                                    }
+                                    //匹配正负号
+                                    if (MinusNum)
+                                        temp = -temp;
+                                    //临时值
+                                    container = 0.0f + temp;
                                     //循环降次
                                     for (int count = temp; count > 0; count /= 10)
                                         container /= 10;
+
                                     //加上小数部分
                                     *lpNum += container;
                                 }
