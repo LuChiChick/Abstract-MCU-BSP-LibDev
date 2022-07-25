@@ -8,7 +8,9 @@ namespace cus
     {
         IO_STREAM_ERROR_NONE,           //无错误
         IO_STREAM_ERROR_PUTCHAR_FAILED, //输出字节失败
-        IO_STREAM_ERROR_PRINTF_FAILED,  //格式化输入输出失败
+        IO_STREAM_ERROR_GETCHAR_FAILED, //读取字节失败
+        IO_STREAM_ERROR_PRINTF_FAILED,  //格式化输出失败
+        IO_STREAM_ERROR_SCANF_FAILED,   //格式化输入失败
     };
 
     //抽象输出流，提供printf及<<重定向运算
@@ -100,6 +102,7 @@ namespace cus
     //抽象输入流，提供scanf及>>重定向运算
     class Abs_IStream
     {
+    public:
         /**
          * 获取一个字节数据
          * @return 获取的字节数据

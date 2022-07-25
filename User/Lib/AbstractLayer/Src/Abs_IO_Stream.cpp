@@ -227,7 +227,7 @@ namespace cus
      */
     Abs_IStream &Abs_IStream::operator>>(double &num)
     {
-        scanf("%lf", num);
+        scanf("%lf", &num);
         return *this;
     }
 
@@ -238,7 +238,7 @@ namespace cus
      */
     Abs_IStream &Abs_IStream::operator>>(float &num)
     {
-        scanf("%f", num);
+        scanf("%f", &num);
         return *this;
     }
 }
