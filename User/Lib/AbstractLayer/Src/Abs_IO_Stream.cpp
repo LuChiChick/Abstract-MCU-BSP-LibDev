@@ -205,7 +205,7 @@ namespace cus
      */
     Abs_IStream &Abs_IStream::operator>>(char &chr)
     {
-        chr = getchar();
+        scanf("%c", &chr);
         return *this;
     }
 
