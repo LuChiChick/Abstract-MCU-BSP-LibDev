@@ -1,7 +1,7 @@
 #include "Servo.hpp"
 
-//默认分频系数
-#define DEF_SERVO_DIVIDER TIMER_A_CLOCKSOURCE_DIVIDER_48
+//默认舵机定时器频率
+#define DEF_SERVO_TIMER_FREQUENCY 1000000
 //默认舵机周期计数
 #define DEF_SERVO_PERIOD 20000
 
