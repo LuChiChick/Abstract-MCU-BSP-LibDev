@@ -141,7 +141,12 @@ namespace cus
 
     /**
      * 带参构造函数
-     * @param EUSCI_Ax_BASE 要开启串口的外设模块
+     * @param EUSCI_Ax_BASE 要开启串口的外设模块,有如下选项
+     * @param -A0 RX_P1.2 TX_P1.3
+     * @param -A1 RX_P2.2 TX_P2.3
+     * @param -A2 RX_P3.2 TX_P3.3
+     * @param -A3 RX_P9.6 TX_P9.7
+     * @param Baud_Rate 设置的波特率
      */
     MSP432_Uart::MSP432_Uart(uint32_t EUSCI_Ax_BASE, uint32_t Baud_Rate)
     {
@@ -150,7 +155,11 @@ namespace cus
 
     /**
      * 构造&类初始化
-     * @param EUSCI_Ax_BASE 要开启串口的外设模块
+     * @param EUSCI_Ax_BASE 要开启串口的外设模块,有如下选项
+     * @param -A0 RX_P1.2 TX_P1.3
+     * @param -A1 RX_P2.2 TX_P2.3
+     * @param -A2 RX_P3.2 TX_P3.3
+     * @param -A3 RX_P9.6 TX_P9.7
      * @param Baud_Rate 设置的波特率
      */
     MSP432_Uart &MSP432_Uart::construct(uint32_t EUSCI_Ax_BASE, uint32_t Baud_Rate)
