@@ -89,7 +89,7 @@ namespace cus
                 config.dutyCycle = 0;
 
                 // A0
-                if (TIMER_Ax_BASE = TIMER_A0_BASE)
+                if (TIMER_Ax_BASE == TIMER_A0_BASE)
                 {
                 }
 
