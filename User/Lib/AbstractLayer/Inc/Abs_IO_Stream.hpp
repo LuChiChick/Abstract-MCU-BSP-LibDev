@@ -7,6 +7,7 @@ namespace cus
     enum IO_Stream_Error
     {
         IO_STREAM_ERROR_NONE,           //无错误
+        IO_STREAM_ERROR_UNINITED,       //未初始化
         IO_STREAM_ERROR_PUTCHAR_FAILED, //输出字节失败
         IO_STREAM_ERROR_GETCHAR_FAILED, //读取字节失败
         IO_STREAM_ERROR_PRINTF_FAILED,  //格式化输出失败

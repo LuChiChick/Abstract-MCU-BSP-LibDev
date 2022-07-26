@@ -375,7 +375,7 @@ namespace cus
             return IO_STREAM_ERROR_NONE;
         }
         else
-            return IO_STREAM_ERROR_PUTCHAR_FAILED;
+            return IO_STREAM_ERROR_UNINITED;
     };
 
     /**
@@ -764,7 +764,7 @@ namespace cus
             return IO_STREAM_ERROR_NONE;
         }
         else
-            return IO_STREAM_ERROR_SCANF_FAILED;
+            return IO_STREAM_ERROR_UNINITED;
     }
 
     /**
