@@ -18,6 +18,13 @@ namespace cus
     {
     public:
         /**
+         * 设置PWM生成器工作频率
+         * @param Frequency PWM生成器工作频率
+         * @return  PWM_Generator_Error错误抛出
+         */
+        virtual PWM_Generator_Error Set_Generator_Frequency(uint32_t Frequency) = 0;
+
+        /**
          * 设置PWM信号周期
          * @param Period 周期
          * @return  PWM_Generator_Error错误抛出
@@ -29,7 +36,7 @@ namespace cus
          * @param DutyCycle 占空周期
          * @return  PWM_Generator_Error错误抛出
          */
-        virtual PWM_Generator_Error Set_DutyCycle(uint32_t Period) = 0;
+        virtual PWM_Generator_Error Set_DutyCycle(uint32_t DutyCycle) = 0;
 
         /**
          * 开始输出
