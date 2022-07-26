@@ -42,14 +42,14 @@ namespace cus
          * 获取舵机角度
          * @return 角度
          */
-        float getAngle();
+        virtual float getAngle();
 
         /**
          * 移动到指定角度
          * @param angle 最大角度
          * @return 无
          */
-        void attach(float angle);
+        virtual void attach(float angle);
     };
 }
 
