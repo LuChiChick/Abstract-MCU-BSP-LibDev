@@ -37,6 +37,8 @@ namespace cus
         this->MIN_COMPARE = (DEF_SERVO_PERIOD * 0.025);
         this->MAX_ANGLE = MAX_ANGLE;
 
+        //设置PWM生成器频率
+        PWM_Generator.Set_Generator_Frequency(DEF_SERVO_TIMER_FREQUENCY);
         //设置周期
         PWM_Generator.Set_Period(DEF_SERVO_PERIOD);
 
