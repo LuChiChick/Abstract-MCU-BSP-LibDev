@@ -773,7 +773,7 @@ namespace cus
      * @param lpEUSCI_Ax_End_CallBack 自定义的中断回调函数指针
      * @arg 必须是void 返回值，参数为void的函数
      */
-    void MSP432_Uart::Enable_EndChar_Interrupt(const char End_Char, void (*lpEUSCI_Ax_End_CallBack)(void))
+    void MSP432_Uart::enable_EndChar_Interrupt(const char End_Char, void (*lpEUSCI_Ax_End_CallBack)(void))
     {
         if (isInit_already)
         {
