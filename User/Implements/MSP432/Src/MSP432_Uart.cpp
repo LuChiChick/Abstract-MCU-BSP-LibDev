@@ -359,6 +359,9 @@ namespace cus
         //检查初始化审查
         if (isInit_already)
         {
+            //检查启动文件是否分配堆内存，EUSCI中断接收的东西是放在EUSCI模块的仅有的两字节缓存的
+            //如果连续写入，他会把多的东西放在堆内存，如果没有足够堆内存，会抱死标志位
+            // UART_transmitData内部定义会陷入死循环
             UART_transmitData(EUSCI_Ax_BASE, chr);
             return IO_STREAM_ERROR_NONE;
         }
