@@ -69,7 +69,7 @@ extern "C" void EUSCIA1_IRQHandler(void)
                 //递增字节计数
                 (*EUSCI_A1_Buffer_Counter)++;
                 //处理结束中断回调
-                if ((EUSCI_A1_Buffer[*EUSCI_A1_Buffer_Counter] == EUSCI_A1_End_Char) && (lpEUSCI_A1_End_CallBack != NULL))
+                if ((EUSCI_A1_Buffer[*EUSCI_A1_Buffer_Counter- 1] == EUSCI_A1_End_Char) && (lpEUSCI_A1_End_CallBack != NULL))
                     lpEUSCI_A1_End_CallBack();
             }
             //缓冲区溢出时仅处理结束中断
@@ -95,7 +95,7 @@ extern "C" void EUSCIA2_IRQHandler(void)
                 //递增字节计数
                 (*EUSCI_A2_Buffer_Counter)++;
                 //处理结束中断回调
-                if ((EUSCI_A2_Buffer[*EUSCI_A2_Buffer_Counter] == EUSCI_A2_End_Char) && (lpEUSCI_A2_End_CallBack != NULL))
+                if ((EUSCI_A2_Buffer[*EUSCI_A2_Buffer_Counter- 1] == EUSCI_A2_End_Char) && (lpEUSCI_A2_End_CallBack != NULL))
                     lpEUSCI_A2_End_CallBack();
             }
             //缓冲区溢出时仅处理结束中断
@@ -121,7 +121,7 @@ extern "C" void EUSCIA3_IRQHandler(void)
                 //递增字节计数
                 (*EUSCI_A3_Buffer_Counter)++;
                 //处理结束中断回调
-                if ((EUSCI_A3_Buffer[*EUSCI_A3_Buffer_Counter] == EUSCI_A3_End_Char) && (lpEUSCI_A3_End_CallBack != NULL))
+                if ((EUSCI_A3_Buffer[*EUSCI_A3_Buffer_Counter- 1] == EUSCI_A3_End_Char) && (lpEUSCI_A3_End_CallBack != NULL))
                     lpEUSCI_A3_End_CallBack();
             }
             //缓冲区溢出时仅处理结束中断
@@ -147,6 +147,7 @@ namespace cus
      * @param -A2 RX_P3.2 TX_P3.3
      * @param -A3 RX_P9.6 TX_P9.7
      * @param Baud_Rate 设置的波特率
+     * @arg -仅支持115200和9600
      */
     MSP432_Uart::MSP432_Uart(uint32_t EUSCI_Ax_BASE, uint32_t Baud_Rate)
     {
@@ -161,6 +162,7 @@ namespace cus
      * @param -A2 RX_P3.2 TX_P3.3
      * @param -A3 RX_P9.6 TX_P9.7
      * @param Baud_Rate 设置的波特率
+     * @arg -仅支持115200和9600
      */
     MSP432_Uart &MSP432_Uart::construct(uint32_t EUSCI_Ax_BASE, uint32_t Baud_Rate)
     {
@@ -316,6 +318,8 @@ namespace cus
                 //开启IO模块第二功能
                 GPIO_setAsPeripheralModuleFunctionOutputPin(GPIO_PORT_P2, GPIO_PIN2, GPIO_PRIMARY_MODULE_FUNCTION);
                 GPIO_setAsPeripheralModuleFunctionInputPin(GPIO_PORT_P2, GPIO_PIN3, GPIO_PRIMARY_MODULE_FUNCTION);
+                EUSCI_A1_Buffer = buffer;
+                EUSCI_A1_Buffer_Counter = &buffer_counter;
                 //开启串口端口中断
                 Interrupt_enableInterrupt(INT_EUSCIA1);
                 break;
@@ -323,6 +327,8 @@ namespace cus
                 //开启IO模块第二功能
                 GPIO_setAsPeripheralModuleFunctionOutputPin(GPIO_PORT_P3, GPIO_PIN2, GPIO_PRIMARY_MODULE_FUNCTION);
                 GPIO_setAsPeripheralModuleFunctionInputPin(GPIO_PORT_P3, GPIO_PIN3, GPIO_PRIMARY_MODULE_FUNCTION);
+                EUSCI_A2_Buffer = buffer;
+                EUSCI_A2_Buffer_Counter = &buffer_counter;
                 //开启串口端口中断
                 Interrupt_enableInterrupt(INT_EUSCIA2);
                 break;
@@ -330,6 +336,8 @@ namespace cus
                 //开启IO模块第二功能
                 GPIO_setAsPeripheralModuleFunctionOutputPin(GPIO_PORT_P9, GPIO_PIN6, GPIO_PRIMARY_MODULE_FUNCTION);
                 GPIO_setAsPeripheralModuleFunctionInputPin(GPIO_PORT_P9, GPIO_PIN7, GPIO_PRIMARY_MODULE_FUNCTION);
+                EUSCI_A3_Buffer = buffer;
+                EUSCI_A3_Buffer_Counter = &buffer_counter;
                 //开启串口端口中断
                 Interrupt_enableInterrupt(INT_EUSCIA3);
                 break;
