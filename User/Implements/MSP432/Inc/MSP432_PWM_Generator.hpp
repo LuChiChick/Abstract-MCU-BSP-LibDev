@@ -85,6 +85,14 @@ namespace cus
          * @param -TA3.4 ->P9.3
          */
         MSP432_PWM_Generator &construct(uint32_t TIMER_Ax_BASE, uint32_t TIMER_A_CAPTURECOMPARE_REGISTER);
+
+        /**
+         * 设置PWM生成器工作频率
+         * @param Frequency PWM生成器工作频率
+         * @return  PWM_Generator_Error错误抛出
+         */
+        virtual PWM_Generator_Error Set_Generator_Frequency(uint32_t Frequency);
+
         /**
          * 设置PWM信号周期
          * @param Period 周期
