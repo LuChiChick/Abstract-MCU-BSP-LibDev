@@ -58,6 +58,16 @@ namespace cus
         float_PID(float kP, float kI, float kD, float max, float min);
 
         /**
+         * 构造&初始化
+         * @param kP 误差直接反馈比率
+         * @param kI 误差积分反馈比率
+         * @param kD 误差微分反馈比率
+         * @param max 输出最大值
+         * @param min 输出最小值
+         */
+        float_PID &construct(float kP, float kI, float kD, float max, float min);
+
+        /**
          * 计算PID得数
          * @param target 目标值
          * @param measure 测量值
