@@ -1,3 +1,5 @@
+GPL-3.0 License
+
 # Copyright © Abstract BSP Lib. DevBy @LuChiChick
 
 This software component is licensed by @LuChiChick personal under the **GPL-3.0** license. You may not use this file except in compliance with this license. You may obtain a copy of the license [here](https://opensource.org/licenses/GPL-3.0).
