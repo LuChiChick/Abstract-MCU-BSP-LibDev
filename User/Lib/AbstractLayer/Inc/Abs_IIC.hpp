@@ -1,6 +1,8 @@
 #ifndef __CUS__ABS_IIC__
 #define __CUS__ABS_IIC__
 
+#include "stdint.h"
+
 namespace cus
 {
     // IIC类错误反馈
