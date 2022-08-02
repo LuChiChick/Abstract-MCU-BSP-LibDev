@@ -153,6 +153,26 @@ namespace cus
 
         return *this;
     }
+
+    /**
+     *   颠倒颜色
+     *   @param YesOrNo 是否颠倒颜色
+     */
+    SSD1306_Error SSD1306::colorTurn(bool YesOrNo)
+    {
+        if (isInit_already)
+        {
+
+            if (IIC_Wire->write(0x00) != IIC_ERROR_NONE)
+                return SSD1306_ERROR_WRITE_FAILED;
+            if (IIC_Wire->write(YesOrNo ? 0xA7 : 0xA6) != IIC_ERROR_NONE)
+                return SSD1306_ERROR_WRITE_FAILED;
+            IIC_Wire->end();
+            return SSD1306_ERROR_NONE;
+        }
+        else
+            return SSD1306_ERROR_UNINITED;
+    }
     /**
      *   设置打印起始笔刷位置
      *   @param x_offest x坐标
