@@ -48,6 +48,7 @@
 
 #忽略文件
 !.gitignore
+!License.md
 #自述文件
 !README.md
 #图片文件
