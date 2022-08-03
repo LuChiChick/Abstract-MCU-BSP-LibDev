@@ -6,7 +6,7 @@ namespace cus
     float_PID::float_PID()
     {
         //初始化审查
-        inInit_already = false;
+        isInit_already = false;
     }
 
     /**
@@ -47,7 +47,7 @@ namespace cus
         err_integral = 0;
 
         //初始化审查
-        inInit_already = true;
+        isInit_already = true;
 
         return *this;
     }
@@ -60,7 +60,7 @@ namespace cus
      */
     float float_PID::calculate(float target, float measure)
     {
-        if (inInit_already) //正确初始化审查
+        if (isInit_already) //正确初始化审查
         {
             float P_out, I_out, D_out, Total_out; //三项输出及输出总和
 
@@ -99,8 +99,7 @@ namespace cus
      */
     void float_PID::clear_err_integral(void)
     {
-        if (inInit_already)
-            err_integral = 0;
+        err_integral = 0;
     }
 
 }

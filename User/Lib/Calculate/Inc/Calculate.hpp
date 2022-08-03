@@ -30,7 +30,7 @@ namespace cus
     class float_PID
     {
     private:
-        bool inInit_already; //初始化审查
+        bool isInit_already; //初始化审查
 
         float max; //最小值
         float min; //最大值
