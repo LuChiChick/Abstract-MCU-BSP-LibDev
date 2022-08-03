@@ -334,6 +334,8 @@ namespace cus
             if (IIC_Wire->write(initCmdLine[count]) != IIC_ERROR_NONE)
                 return SSD1306_ERROR_WRITE_FAILED;
         }
+        //结束通信
+        IIC_Wire->end();
         //清理屏幕
         if (clear() != SSD1306_ERROR_NONE)
             return SSD1306_ERROR_CLEAR_FAILED;
