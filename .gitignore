@@ -32,13 +32,6 @@
 !User/Lib/Peripheral/Inc/**
 !User/Lib/Peripheral/Src/**
 
-# 图形类库
-!User/Lib/Graphic/
-!User/Lib/Graphic/Inc/
-!User/Lib/Graphic/Src/
-!User/Lib/Graphic/Inc/**
-!User/Lib/Graphic/Src/**
-
 #STM32HAL实现层
 !User/Implements/STM32_HAL
 !User/Implements/STM32_HAL/Inc/
