@@ -1,36 +1,36 @@
 *
 !User/
-!User/Lib/
+!User/Abstract_BSP_Lib/
 !User/Implements/
 
 
 # 抽象层
-!User/Lib/AbstractLayer/
-!User/Lib/AbstractLayer/Inc/
-!User/Lib/AbstractLayer/Src/
-!User/Lib/AbstractLayer/Inc/**
-!User/Lib/AbstractLayer/Src/**
+!User/Abstract_BSP_Lib/AbstractLayer/
+!User/Abstract_BSP_Lib/AbstractLayer/Inc/
+!User/Abstract_BSP_Lib/AbstractLayer/Src/
+!User/Abstract_BSP_Lib/AbstractLayer/Inc/**
+!User/Abstract_BSP_Lib/AbstractLayer/Src/**
 
 # 基础IO层
-!User/Lib/BaseIO/
-!User/Lib/BaseIO/Inc/
-!User/Lib/BaseIO/Src/
-!User/Lib/BaseIO/Inc/**
-!User/Lib/BaseIO/Src/**
+!User/Abstract_BSP_Lib/BaseIO/
+!User/Abstract_BSP_Lib/BaseIO/Inc/
+!User/Abstract_BSP_Lib/BaseIO/Src/
+!User/Abstract_BSP_Lib/BaseIO/Inc/**
+!User/Abstract_BSP_Lib/BaseIO/Src/**
 
 # 计算工具类库
-!User/Lib/Calculate/
-!User/Lib/Calculate/Inc/
-!User/Lib/Calculate/Src/
-!User/Lib/Calculate/Inc/**
-!User/Lib/Calculate/Src/**
+!User/Abstract_BSP_Lib/Calculate/
+!User/Abstract_BSP_Lib/Calculate/Inc/
+!User/Abstract_BSP_Lib/Calculate/Src/
+!User/Abstract_BSP_Lib/Calculate/Inc/**
+!User/Abstract_BSP_Lib/Calculate/Src/**
 
 # 外设类库
-!User/Lib/Peripheral/
-!User/Lib/Peripheral/Inc/
-!User/Lib/Peripheral/Src/
-!User/Lib/Peripheral/Inc/**
-!User/Lib/Peripheral/Src/**
+!User/Abstract_BSP_Lib/Peripheral/
+!User/Abstract_BSP_Lib/Peripheral/Inc/
+!User/Abstract_BSP_Lib/Peripheral/Src/
+!User/Abstract_BSP_Lib/Peripheral/Inc/**
+!User/Abstract_BSP_Lib/Peripheral/Src/**
 
 #STM32HAL实现层
 !User/Implements/STM32_HAL
