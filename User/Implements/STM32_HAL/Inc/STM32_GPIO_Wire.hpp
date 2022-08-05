@@ -1,7 +1,7 @@
 #ifndef __CUS__STM32_HAL_GPIO_WIRE__
 #define __CUS__STM32_HAL_GPIO_WIRE__
 
-#include "Abs_BaseIO.hpp"
+#include "Abs_GPIO_Wire.hpp"
 extern "C"
 {
 #include "main.h"

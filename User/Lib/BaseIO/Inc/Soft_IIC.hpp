@@ -1,7 +1,8 @@
 #ifndef __CUS__SOFT_IIC__
 #define __CUS__SOFT_IIC__
 
-#include "Abs_BaseIO.hpp"
+#include "Abs_GPIO_Wire.hpp"
+#include "Abs_IIC.hpp"
 
 namespace cus
 {

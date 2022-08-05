@@ -1,7 +1,7 @@
 #ifndef __CUS__SSD1306__
 #define __CUS__SSD1306__
 
-#include "Abs_BaseIO.hpp"
+#include "Abs_IIC.hpp"
 #include "Abs_IO_Stream.hpp"
 
 namespace cus
