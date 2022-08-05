@@ -18,7 +18,9 @@ namespace cus
         MONOCHROME_SCREEN_ERROR_BUFFER_SIZE_INCORRECT, //缓冲区大小不正确
         MONOCHROME_SCREEN_ERROR_OUT_OF_RANGE_X,        // X出界
         MONOCHROME_SCREEN_ERROR_OUT_OF_RANGE_Y,        // Y出界
+        MONOCHROME_SCREEN_ERROR_UNSUPPORTED_FONT_SIZE, //不支持的字体大小
         MONOCHROME_SCREEN_ERROR_OUTSTREAM_FAILED,      //输出流失败
+        MONOCHROME_SCREEN_ERROR_FUNCTION_UNREALIZED,   //功能未实现
     };
 
     //单色屏驱动类库,继承输出流功能
@@ -56,6 +58,13 @@ namespace cus
          * @return Monochrome_Screen_Error错误异常抛出
          */
         virtual Monochrome_Screen_Error switch_Brush_Color(bool false_for_Normal_true_for_Revers) = 0;
+
+        /**
+         * 设置字体大小
+         * @param font_size
+         * @return Monochrome_Screen_Error错误异常抛出
+         */
+        virtual Monochrome_Screen_Error set_Font_Size(uint8_t font_size) = 0;
 
         /**
          * 绘制像素点

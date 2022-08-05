@@ -33,7 +33,7 @@ namespace cus
         GPIO_WIRE_ERROR_MODE_UNKNOWN,        //引脚初始化模式未知
         GPIO_WIRE_ERROR_MODE_INCORRECT,      //错误的引脚模式
         GPIO_WIRE_ERROR_LEVEL_UNKNOWN,       //引脚未知电平错误
-        GPIO_WIRE_ERROR_UNREALIZED_FUNCTION, //功能未实现
+        GPIO_WIRE_ERROR_FUNCTION_UNREALIZED, //功能未实现
     };
 
     //抽象GPIO封装类
