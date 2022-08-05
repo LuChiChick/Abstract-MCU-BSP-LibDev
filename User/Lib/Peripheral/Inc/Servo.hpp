@@ -14,10 +14,7 @@ namespace cus
         //类内PWM生成器记录
         Abs_PWM_Generator *PWM_Generator;
 
-        int MAX_COMPARE; //占空比tic最大值
-        int MIN_COMPARE; //占空比tic最小值
         float MAX_ANGLE; //最大角度
-
         float angle; //当前角度
     public:
         //默认构造函数

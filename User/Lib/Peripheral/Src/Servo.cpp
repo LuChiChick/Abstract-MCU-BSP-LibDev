@@ -33,8 +33,6 @@ namespace cus
     {
         //信息记录
         this->PWM_Generator = &PWM_Generator;
-        this->MAX_COMPARE = (DEF_SERVO_PERIOD * 0.125);
-        this->MIN_COMPARE = (DEF_SERVO_PERIOD * 0.025);
         this->MAX_ANGLE = MAX_ANGLE;
 
         //设置PWM生成器频率
@@ -59,7 +57,7 @@ namespace cus
         if (isInit_already && angle <= MAX_ANGLE && angle >= 0)
         {
             PWM_Generator->start();
-            PWM_Generator->Set_DutyCycle(cus::map(angle, 0.0f, MAX_ANGLE, MIN_COMPARE, MAX_COMPARE));
+            PWM_Generator->Set_DutyCycle(cus::map(angle, 0.0f, MAX_ANGLE, (DEF_SERVO_PERIOD * 0.025), (DEF_SERVO_PERIOD * 0.125)));
             //记录数据
             this->angle = angle;
         }
