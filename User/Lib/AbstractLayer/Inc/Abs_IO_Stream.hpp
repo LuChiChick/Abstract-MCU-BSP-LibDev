@@ -97,7 +97,7 @@ namespace cus
          *   @param count 需要设置的小数保留位数
          *   @return 无
          */
-        virtual void Set_Decimal_Hold(int BaudRate);
+        virtual void set_Decimal_Hold(int BaudRate);
     };
 
     //抽象输入流，提供scanf及>>重定向运算

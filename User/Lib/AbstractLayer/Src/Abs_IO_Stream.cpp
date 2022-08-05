@@ -182,7 +182,7 @@ namespace cus
      *   @param count 需要设置的小数保留位数
      *   @return 无
      */
-    void Abs_OStream::Set_Decimal_Hold(int count)
+    void Abs_OStream::set_Decimal_Hold(int count)
     {
         DECIMAL_HOLD_MAX = count;
     }
