@@ -15,7 +15,7 @@ namespace cus
         Abs_PWM_Generator *PWM_Generator;
 
         float MAX_ANGLE; //最大角度
-        float angle; //当前角度
+        float angle;     //当前角度
     public:
         //默认构造函数
         Servo();
