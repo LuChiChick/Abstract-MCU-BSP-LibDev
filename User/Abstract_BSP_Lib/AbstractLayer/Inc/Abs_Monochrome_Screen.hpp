@@ -24,16 +24,19 @@ namespace cus
     };
 
     //单色屏驱动类库,继承输出流功能
-    class Monochrome_Screen : public Abs_OStream
+    class Abs_Monochrome_Screen : public Abs_OStream
     {
     protected:
         uint16_t SCREEN_X; //屏幕长
         uint16_t SCREEN_Y; //屏幕宽
 
-        uint8_t *buffer;   //缓冲区
-        bool isFullBuffer; //是否全页缓存
+        uint8_t *buffer;                //缓冲区
+        uint16_t Occupied_BufferLength; //已记载的缓冲区长度
 
-        bool Brush_Color_Switch; //笔刷反色
+        uint8_t font_size; //字体大小
+
+        bool isFullBuffer;        //是否全页缓存
+        bool Pixel_Color_Reverse; //笔刷反色
 
         /**
          *   初始化屏幕
@@ -43,7 +46,7 @@ namespace cus
 
     public:
         //默认构造函数
-        Monochrome_Screen();
+        Abs_Monochrome_Screen();
 
         /**
          * 清理屏幕
@@ -53,18 +56,18 @@ namespace cus
         virtual Monochrome_Screen_Error clear() = 0;
 
         /**
-         * 切换笔刷颜色
-         * @param false_for_Normal_true_for_Revers false正常笔刷true反色笔刷
+         * 反转像素颜色
+         * @param false_for_Normal_true_for_Revers false正常像素点true反色像素点
          * @return Monochrome_Screen_Error错误异常抛出
          */
-        virtual Monochrome_Screen_Error switch_Brush_Color(bool false_for_Normal_true_for_Revers) = 0;
+        virtual Monochrome_Screen_Error reverse_Pixel_Color(bool false_for_Normal_true_for_Revers);
 
         /**
          * 设置字体大小
          * @param font_size
          * @return Monochrome_Screen_Error错误异常抛出
          */
-        virtual Monochrome_Screen_Error set_Font_Size(uint8_t font_size) = 0;
+        virtual Monochrome_Screen_Error set_Font_Size(uint8_t font_size);
 
         /**
          * 绘制像素点
