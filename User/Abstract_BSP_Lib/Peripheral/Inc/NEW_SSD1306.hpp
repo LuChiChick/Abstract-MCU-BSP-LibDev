@@ -33,6 +33,23 @@ namespace dev
     public:
         //默认构造函数
         SSD1306();
+
+        /**
+         * 带参构造函数
+         * @param Abs_IIC_Master实例
+         * @param ScreenX 屏幕X分辨率
+         * @param ScreenY 屏幕Y分辨率
+         */
+        SSD1306(Abs_IIC_Master &IIC_Wire, uint8_t ScreenX, uint8_t ScreenY);
+
+        /**
+         * 构造&初始化
+         * @param Abs_IIC_Master实例
+         * @param ScreenX 屏幕X分辨率
+         * @param ScreenY 屏幕Y分辨率
+         * @return SSD1306实例
+         */
+        SSD1306 &construct(Abs_IIC_Master &IIC_Wire, uint8_t ScreenX, uint8_t ScreenY);
     };
 }
 
