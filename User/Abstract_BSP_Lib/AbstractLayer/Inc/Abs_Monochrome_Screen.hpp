@@ -107,6 +107,20 @@ namespace cus
          *   @return Monochrome_Screen_Error错误异常抛出
          */
         virtual Monochrome_Screen_Error putchar(uint8_t x_offest, uint8_t y_offest, const char chr) = 0;
+
+        /**
+         *   指定位置格式化输出
+         *   @param x_offest x坐标
+         *   @param y_offest y坐标
+         *   @param lpFormatString 格式化输出字符串
+         *   @param ... 要打印的内容参数，支持如下:
+         *   @param -%d 输出整数
+         *   @param -%f 输出浮点数
+         *   @param -%s 输出字符串
+         *   @param -%c 输出字符
+         *   @return Monochrome_Screen_Error错误异常抛出
+         */
+        virtual Monochrome_Screen_Error printf(uint8_t x_offest, uint8_t y_offest, const char *lpFormatString, ...) = 0;
     };
 
 }

@@ -1,4 +1,8 @@
 #include "Abs_Monochrome_Screen.hpp"
+#include "stdarg.h"
+
+#define ASCII_DATA_LENGTH 6    //默认字符集数据长度
+#define ASCII_DATA_POS_WIDTH 8 //默认字符集数据像素宽度
 
 namespace cus
 {
@@ -26,6 +30,90 @@ namespace cus
         //返回无错误
         return MONOCHROME_SCREEN_ERROR_NONE;
     }
+
+    // /**
+    //  *   指定位置格式化输出
+    //  *   @param x_offest x坐标
+    //  *   @param y_offest y坐标
+    //  *   @param lpFormatString 格式化输出字符串
+    //  *   @param ... 要打印的内容参数，支持如下:
+    //  *   @param -%d 输出整数
+    //  *   @param -%f 输出浮点数
+    //  *   @param -%s 输出字符串
+    //  *   @param -%c 输出字符
+    //  *   @return Monochrome_Screen_Error错误异常抛出
+    //  */
+    // Monochrome_Screen_Error Abs_Monochrome_Screen::printf(uint8_t x_offest, uint8_t y_offest, const char *lpFormatString, ...)
+    // {
+    //     //初始化参数列表，指向不定参第一个参数
+    //     va_list args;
+    //     va_start(args, lpFormatString);
+    //     //打印坐标记录
+    //     uint8_t cursorX = x_offest;
+    //     uint8_t cursorY = y_offest;
+    //     //轮询数据
+    //     while (*lpFormatString != '\0')
+    //     {
+    //         //行越界审查
+    //         if (cursorX + ASCII_DATA_LENGTH >= SCREEN_X)
+    //             return MONOCHROME_SCREEN_ERROR_NONE;
+    //         //检查换行符
+    //         if (*lpFormatString == '\n')
+    //         {
+    //             cursorX = x_offest;
+    //             cursorY += SSD1306_PAGE_POS_WIDTH;
+    //             //页越界审查
+    //             if (cursorY >= SCREEN_PAGE * SSD1306_PAGE_POS_WIDTH)
+    //                 return MONOCHROME_SCREEN_ERROR_NONE;
+    //             lpFormatString++;
+    //             continue;
+    //         }
+    //         //筛查格式化标签
+    //         if (*lpFormatString == '%')
+    //         {
+    //             switch (*(lpFormatString + 1))
+    //             {
+    //             //数型
+    //             case 'd':
+    //                 if (drawInteger(cursorX, cursorY, va_arg(args, int)) != MONOCHROME_SCREEN_ERROR_NONE)
+    //                     return SSD1306_ERROR_DRAW_INT_FAILED;
+    //                 //跃迁格式化字符串指针
+    //                 lpFormatString += 2;
+    //                 //继续下一个检测
+    //                 continue;
+    //             case 'f':
+    //                 if (drawDecimal(cursorX, cursorY, va_arg(args, double)) != MONOCHROME_SCREEN_ERROR_NONE)
+    //                     return SSD1306_ERROR_DRAW_DEC_FAILED;
+    //                 //跃迁格式化字符串指针
+    //                 lpFormatString += 2;
+    //                 //继续下一个检测
+    //                 continue;
+    //             case 's':
+    //                 if (drawString(cursorX, cursorY, va_arg(args, const uint8_t *)) != MONOCHROME_SCREEN_ERROR_NONE)
+    //                     return SSD1306_ERROR_DRAW_DEC_FAILED;
+    //                 //跃迁格式化字符串指针
+    //                 lpFormatString += 2;
+    //                 //继续下一个检测
+    //                 continue;
+    //             case 'c':
+    //                 if (putchar(cursorX, cursorY, (uint8_t)va_arg(args, int)) != MONOCHROME_SCREEN_ERROR_NONE)
+    //                     return SSD1306_ERROR_PRINT_FAILED;
+    //                 cursorX += ASCII_DATA_LENGTH;
+    //                 //跃迁格式化字符串指针
+    //                 lpFormatString += 2;
+    //                 //继续下一个检测
+    //                 continue;
+    //             //不在检测范围内的标签
+    //             default:
+    //                 break;
+    //             }
+    //         }
+    //         if (putchar(cursorX, cursorY, *(lpFormatString++)) != MONOCHROME_SCREEN_ERROR_NONE) //打印并更新指针
+    //             return SSD1306_ERROR_PRINT_FAILED;
+    //         cursorX += ASCII_DATA_LENGTH;
+    //     }
+    //     return MONOCHROME_SCREEN_ERROR_NONE;
+    // }
 }
 
 //单色屏资源区，字体及图像
