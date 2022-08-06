@@ -3,18 +3,19 @@
 #include "stddef.h"
 
 //宏定义
-#define SSD1306_CMD 0            // SSD1306控制帧标识
-#define SSD1306_DATA 1           // SSD1306数据帧标识
+#define SSD1306_CMD 0x00         // SSD1306控制帧标识
+#define SSD1306_DATA 0x40        // SSD1306数据帧标识
 #define SSD1306_ADDR 0X3C        // SSD1306地址
 #define IIC_SPEED_THRESHOLD 5    //信号稳定时延&刷新时延
-#define DECIMAL_HOLD_MAX 5       //小数点精度
 #define ASCII_DATA_LENGTH 6      //默认字符集数据长度
 #define ASCII_DATA_POS_WIDTH 8   //默认字符集数据像素宽度
 #define SSD1306_PAGE_POS_WIDTH 8 //页像素宽度
 
 namespace dev
 {
+    //使用ASCII_0806标准字符集
     using Monochrome_Screen_Resources::ASCII_0806;
+
     //默认构造函数
     SSD1306::SSD1306()
     {
@@ -31,6 +32,7 @@ namespace dev
     {
         construct(IIC_Wire, ScreenX, ScreenY);
     }
+
     /**
      * 构造&初始化
      * @param Abs_IIC_Master实例
@@ -58,10 +60,13 @@ namespace dev
         //初始化完成
         isInit_already = true;
 
-        //初始化屏幕参数&唤醒
+        //初始化屏幕参数&唤醒，执行200次直到成功，否则宣布初始化失败
         for (int count = 0; count < 200; count++)
             if (init_Screen() == MONOCHROME_SCREEN_ERROR_NONE)
-                break;
+                return *this;
+
+        //初始化失败
+        isInit_already = false;
 
         return *this;
     }
@@ -127,4 +132,81 @@ namespace dev
         //无错误返回
         return MONOCHROME_SCREEN_ERROR_NONE;
     }
+
+    /**
+     *   指定坐标打印字符
+     *   @param x_offest x坐标
+     *   @param y_offest y坐标
+     *   @param chr 输出字符
+     *   @return Monochrome_Screen_Error错误异常抛出
+     */
+    Monochrome_Screen_Error SSD1306::putchar(uint8_t x_offest, uint8_t y_offest, const char chr)
+    {
+        //正确初始化检查
+        if (isInit_already == false)
+            return MONOCHROME_SCREEN_ERROR_UNINITED; //未初始化
+        //排查是否越界
+        if (y_offest >= SCREEN_Y)
+            return MONOCHROME_SCREEN_ERROR_OUT_OF_RANGE_Y; // Y越界
+        if (x_offest >= SCREEN_X)
+            return MONOCHROME_SCREEN_ERROR_OUT_OF_RANGE_X; // X越界
+
+        //缓存字符到缓冲区
+        draw_Char_ToBuffer(x_offest, y_offest, chr);
+
+        //计算是否需要偏移像素点分两行打印(即坐标是否能被PagePos整除)
+        uint8_t pos_offest = y_offest % SSD1306_PAGE_POS_WIDTH;
+
+        //第一阶段打印，若字符打印坐标在整页上则一阶段结束打印即可，否则偏移像素打印并进入下一阶段打印
+        {
+            //设置打印笔刷位置
+            if (set_Brush_Position(x_offest, y_offest / SSD1306_PAGE_POS_WIDTH) != MONOCHROME_SCREEN_ERROR_NONE)
+                return MONOCHROME_SCREEN_ERROR_CONNECTION_FAILED; //连接失败
+
+            //起始通信，表明连续写入data
+            if (IIC_Wire->write(SSD1306_DATA) != IIC_ERROR_NONE)
+                return MONOCHROME_SCREEN_ERROR_CONNECTION_FAILED; //连接失败
+
+            //循环打印字符点阵数据，ASCII_0806字符为6个8位数据组成
+            for (uint8_t count = 0; count < ((x_offest + ASCII_DATA_LENGTH) <= SCREEN_X ? ASCII_DATA_LENGTH : SCREEN_X - x_offest); count++)
+            {
+                //偏移pos_offest单位打印
+                if (IIC_Wire->write((ASCII_0806[chr - ' '][count]) << pos_offest) != IIC_ERROR_NONE)
+                    return MONOCHROME_SCREEN_ERROR_CONNECTION_FAILED; //连接失败
+            }
+
+            //通信结束
+            IIC_Wire->end();
+        }
+
+        //判断是否需要打印下半行
+        if (pos_offest > 0)
+        {
+            //判断下半行数据是否超过屏幕Y，如果越界则不用打印
+            if ((y_offest / SSD1306_PAGE_POS_WIDTH) + 1 == SCREEN_PAGE_COUNT)
+                return MONOCHROME_SCREEN_ERROR_NONE;
+
+            //设置打印笔刷位置
+            if (set_Brush_Position(x_offest, (y_offest / SSD1306_PAGE_POS_WIDTH) + 1) != MONOCHROME_SCREEN_ERROR_NONE)
+                return MONOCHROME_SCREEN_ERROR_CONNECTION_FAILED;
+
+            //起始通信，表明连续写入data
+            if (IIC_Wire->write(SSD1306_DATA) != IIC_ERROR_NONE)
+                return MONOCHROME_SCREEN_ERROR_CONNECTION_FAILED;
+
+            //循环打印字符点阵数据，ASCII_0806字符为6个8位数据组成
+            for (uint16_t count = 0; count < ((x_offest + ASCII_DATA_LENGTH) <= SCREEN_X ? ASCII_DATA_LENGTH : SCREEN_X - x_offest); count++)
+            {
+                //反向偏移数据,打印字符下半段
+                if (IIC_Wire->write((ASCII_0806[chr - ' '][count]) >> (SSD1306_PAGE_POS_WIDTH - pos_offest)) != IIC_ERROR_NONE)
+                    return MONOCHROME_SCREEN_ERROR_CONNECTION_FAILED;
+            }
+
+            //通信结束
+            IIC_Wire->end();
+        }
+
+        return MONOCHROME_SCREEN_ERROR_NONE;
+    }
+
 }
