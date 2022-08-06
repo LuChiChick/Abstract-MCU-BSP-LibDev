@@ -31,7 +31,7 @@ namespace cus
 //单色屏资源区，字体及图像
 namespace Monochrome_Screen_Resources
 {
-    //字节垂直，数据水平，标准ASCII字符6*8点阵
+    //字节垂直，数据水平，标准ASCII字符6*8点阵，数据高位在点阵下方
     const uint8_t ASCII_0806[92][6] = {
         {0x00, 0x00, 0x00, 0x00, 0x00, 0x00}, // sp
         {0x00, 0x00, 0x00, 0x2f, 0x00, 0x00}, // !
