@@ -340,7 +340,11 @@ namespace cus
         if (clear() != SSD1306_ERROR_NONE)
             return SSD1306_ERROR_CLEAR_FAILED;
         //发送初始化信息
-        if (printf(0, 0, "Screen Init OK!!\n\nPowered by:\n\nAbstract BSP Lib.\nFrom LuChiChick.\n\n>2022\\4\\17 Ver.") != SSD1306_ERROR_NONE)
+        if (printf(0, 0, "Screen Init OK!!\n\n"
+                         "Powered by:\n\n"
+                         "Abstract BSP Lib.\n"
+                         "From LuChiChick.\n\n"
+                         ">2022\\4\\17 Ver.") != SSD1306_ERROR_NONE)
             return SSD1306_ERROR_PRINT_FAILED;
         //返回
         return SSD1306_ERROR_NONE;
