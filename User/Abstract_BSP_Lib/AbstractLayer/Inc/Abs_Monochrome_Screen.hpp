@@ -110,4 +110,11 @@ namespace cus
 
 }
 
+//单色屏资源区，字体及图像
+namespace Monochrome_Screen_Resources
+{
+    //字节垂直，数据水平，标准ASCII字符6*8点阵
+    extern const uint8_t ASCII_0806[92][6];
+}
+
 #endif
