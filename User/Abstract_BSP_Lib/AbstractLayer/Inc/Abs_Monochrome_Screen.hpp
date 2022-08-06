@@ -95,6 +95,7 @@ namespace cus
          * @param length 图片像素长度
          * @param width 图片像素宽度
          * @param IMG_Arr 图片数组
+         * @return Monochrome_Screen_Error错误异常抛出
          */
         virtual Monochrome_Screen_Error draw_IMG(uint16_t x_offest, uint16_t y_offest, uint16_t length, uint16_t width, const uint8_t *IMG_Arr) = 0;
 
@@ -103,7 +104,7 @@ namespace cus
          *   @param x_offest x坐标
          *   @param y_offest y坐标
          *   @param chr 输出字符
-         *   @return SSD1306_Error异常抛出
+         *   @return Monochrome_Screen_Error错误异常抛出
          */
         virtual Monochrome_Screen_Error putchar(uint8_t x_offest, uint8_t y_offest, const char chr) = 0;
     };
