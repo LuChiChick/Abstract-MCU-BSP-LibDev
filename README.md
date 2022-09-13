@@ -50,11 +50,15 @@
         │       ├─MSP432                MSP432_DriverLib实现
         │       │   ├─Inc                   
         │       │   │   ├─MSP432_GPIO_Wire.hpp          MSP432_GPIO类库
+        │       │   │   ├─MSP432_IRQ_Handler.hpp        MSP432中断处理相关函数库
         │       │   │   ├─MSP432_PWM_Generator.hpp      MSP432_PWM生成器类库
+        │       │   │   ├─MSP432_System_Settings.hpp    MSP432系统设置相关函数库
         │       │   │   └─MSP432_Uart.hpp               MSP432_Uart串口类库
         │       │   └─Src
         │       │       ├─MSP432_GPIO_Wire.cpp          MSP432_GPIO类库具体实现
+        │       │       ├─MSP432_IRQ_Handler.cpp        MSP432中断处理相关函数库具体实现
         │       │       ├─MSP432_PWM_Generator.cpp      MSP432_PWM生成器类库具体实现
+        │       │       ├─MSP432_System_Settings.cpp    MSP432系统设置相关函数库具体实现
         │       │       └─MSP432_Uart.cpp               MSP432_Uart串口类库具体实现
         │       └─STM32_HAL             STM32_HAL库实现
         │           ├─Inc
@@ -81,6 +85,14 @@
 
 ## 更新日志
 ```log
+2022\09\13:
+-16:30
+    暑假期间被电赛MSP板子折腾的够呛，于是放假后鸽了一下平复心情，没想到一下就中秋了QAQ
+    更新了MSP432实现下系统设置相关的内容以及外部中断实现
+    由于本人近段时间在移植一些常见RTOS操作系统，又跟MSP432这板子杠上了，所以这方面的内容可能更新比较多
+    单色屏类库从上一次更新到现在没有变化（主要原因是暑假鸽完了我自己也看不懂了得复盘）
+    近期成功实现了FreeRTOS的源码移植以及内核裁剪，这个还是比较开心的，有了多线程代码逻辑上会轻松不少
+    顺便感慨一下STM32的HAL层真的是非常有远见的聪明举措，本库其实是伴行这个理念而诞生的
 2022\08\01:
 -01:10
     实现重构建SSD1306下定点字符打印功能及初始化成员函数等
