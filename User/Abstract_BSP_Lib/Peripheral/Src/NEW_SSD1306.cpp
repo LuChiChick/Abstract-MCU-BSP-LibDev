@@ -3,13 +3,11 @@
 #include "stddef.h"
 
 //宏定义
-#define SSD1306_CMD 0x00         // SSD1306控制帧标识
-#define SSD1306_DATA 0x40        // SSD1306数据帧标识
-#define SSD1306_ADDR 0X3C        // SSD1306地址
-#define IIC_SPEED_THRESHOLD 5    //信号稳定时延&刷新时延
-#define ASCII_DATA_LENGTH 6      //默认字符集数据长度
-#define ASCII_DATA_POS_WIDTH 8   //默认字符集数据像素宽度
-#define SSD1306_PAGE_POS_WIDTH 8 //页像素宽度
+#define SSD1306_CMD 0x00          // SSD1306控制帧标识
+#define SSD1306_DATA 0x40         // SSD1306数据帧标识
+#define SSD1306_ADDR 0X3C         // SSD1306地址
+#define IIC_DEF_SPEED_THRESHOLD 5 //信号稳定时延&刷新时延
+#define SSD1306_PAGE_POS_WIDTH 8  //页像素宽度
 
 namespace dev
 {
@@ -43,19 +41,18 @@ namespace dev
     SSD1306 &SSD1306::construct(Abs_IIC_Master &IIC_Wire, uint8_t ScreenX, uint8_t ScreenY)
     {
         //相关参数初始化
-        this->IIC_Wire = &IIC_Wire;                                     //记录IIC对象
-        this->SCREEN_X = ScreenX;                                       //屏幕长
-        this->SCREEN_Y = ScreenY;                                       //屏幕宽
-        this->SCREEN_PAGE_COUNT = ScreenY / SSD1306_PAGE_POS_WIDTH;     //屏幕页数计算
-        this->SCREEN_PAGE_ASCII_CHAR_MAX = ScreenX / ASCII_DATA_LENGTH; //屏幕最大容量计算
-        this->cursor_X = 0;                                             //屏幕X指针归位
-        this->cursor_Y = 0;                                             //屏幕Y指针归位
-        this->buffer = NULL;                                            //缓冲区初始化
-        this->isFullBuffer = false;                                     //非全页缓存
+        this->IIC_Wire = &IIC_Wire;                                 //记录IIC对象
+        this->SCREEN_X = ScreenX;                                   //屏幕长
+        this->SCREEN_Y = ScreenY;                                   //屏幕宽
+        this->SCREEN_PAGE_COUNT = ScreenY / SSD1306_PAGE_POS_WIDTH; //屏幕页数计算
+        this->cursor_X = 0;                                         //屏幕X指针归位
+        this->cursor_Y = 0;                                         //屏幕Y指针归位
+        this->buffer = NULL;                                        //缓冲区初始化
+        this->isFullBuffer = false;                                 //非全页缓存
 
         // IIC相关设置 指向目标地址 设置速度阈值
         this->IIC_Wire->focus_on(SSD1306_ADDR);
-        this->IIC_Wire->set_SpeedThreshold(IIC_SPEED_THRESHOLD);
+        this->IIC_Wire->set_SpeedThreshold(IIC_DEF_SPEED_THRESHOLD);
 
         //初始化完成
         isInit_already = true;
@@ -81,11 +78,11 @@ namespace dev
         //设置为字节垂直数据水平模式，屏幕分页，Y轴8像素点为一页
         const uint8_t initCmdLine[29] = {
             SSD1306_CMD, //表明输入cmd
-            0xAE,        //--turn off oled panel
-            0x00,        //---set low column address
-            0x10,        //---set high column address
-            0x40,        //--set start line address  Set Mapping RAM Display Start Line (0x00~0x3F)
-            0x81,        //--set contrast control register
+            0xAE,        //--turn off oled panel 开启OLED面板
+            0x00,        //---set low column address 设置列低位地址
+            0x10,        //---set high column address 设置列高位地址
+            0x40,        //--set start line address  Set Mapping RAM Display Start Line 设置起始行地址，0x40为第64位
+            0x81,        //--set contrast control register 对比度寄存器
             0xCF,        // Set SEG Output Current Brightness
             0xA1,        //--Set SEG/Column Mapping     0xa0左右反置 0xa1正常
             0xC8,        // Set COM/Row Scan Direction   0xc0上下反置 0xc8正常
@@ -122,25 +119,27 @@ namespace dev
         //清理屏幕
         if (clear() != MONOCHROME_SCREEN_ERROR_NONE)
             return MONOCHROME_SCREEN_ERROR_CLEAR_SCREEN_FAILED; //清理屏幕失败
+
         //发送初始化信息
         if (printf(0, 0, "Screen Init OK!!\n\n"
                          "Powered by:\n\n"
                          "Abstract BSP Lib.\n"
                          "From LuChiChick.\n\n"
-                         ">2022\\8\\6 Ver.") != MONOCHROME_SCREEN_ERROR_NONE)
+                         ">2022\\8\\6 Ver.") != IO_STREAM_ERROR_NONE)
             return MONOCHROME_SCREEN_ERROR_OUTSTREAM_FAILED; //输出流失败
+
         //无错误返回
         return MONOCHROME_SCREEN_ERROR_NONE;
     }
 
     /**
-     *   指定坐标打印字符
-     *   @param x_offest x坐标
-     *   @param y_offest y坐标
-     *   @param chr 输出字符
-     *   @return Monochrome_Screen_Error错误异常抛出
+     * 指定坐标打印字符
+     * @param x_offest x坐标
+     * @param y_offest y坐标
+     * @param chr 输出字符
+     * @return Monochrome_Screen_Error错误异常抛出
      */
-    Monochrome_Screen_Error SSD1306::putchar(uint8_t x_offest, uint8_t y_offest, const char chr)
+    Monochrome_Screen_Error SSD1306::putchar_at(uint16_t x_offest, uint16_t y_offest, const char chr)
     {
         //正确初始化检查
         if (isInit_already == false)
@@ -152,7 +151,7 @@ namespace dev
             return MONOCHROME_SCREEN_ERROR_OUT_OF_RANGE_X; // X越界
 
         //缓存字符到缓冲区
-        draw_Char_ToBuffer(x_offest, y_offest, chr);
+        draw_Char_ToBuffer_at(x_offest, y_offest, chr);
 
         //计算是否需要偏移像素点分两行打印(即坐标是否能被PagePos整除)
         uint8_t pos_offest = y_offest % SSD1306_PAGE_POS_WIDTH;
@@ -168,7 +167,7 @@ namespace dev
                 return MONOCHROME_SCREEN_ERROR_CONNECTION_FAILED; //连接失败
 
             //循环打印字符点阵数据，ASCII_0806字符为6个8位数据组成
-            for (uint8_t count = 0; count < ((x_offest + ASCII_DATA_LENGTH) <= SCREEN_X ? ASCII_DATA_LENGTH : SCREEN_X - x_offest); count++)
+            for (uint8_t count = 0; count < ((x_offest + Font_PosLength) <= SCREEN_X ? Font_PosLength : SCREEN_X - x_offest); count++)
             {
                 //偏移pos_offest单位打印
                 if (IIC_Wire->write((ASCII_0806[chr - ' '][count]) << pos_offest) != IIC_ERROR_NONE)
@@ -195,7 +194,7 @@ namespace dev
                 return MONOCHROME_SCREEN_ERROR_CONNECTION_FAILED;
 
             //循环打印字符点阵数据，ASCII_0806字符为6个8位数据组成
-            for (uint16_t count = 0; count < ((x_offest + ASCII_DATA_LENGTH) <= SCREEN_X ? ASCII_DATA_LENGTH : SCREEN_X - x_offest); count++)
+            for (uint16_t count = 0; count < ((x_offest + Font_PosLength) <= SCREEN_X ? Font_PosLength : SCREEN_X - x_offest); count++)
             {
                 //反向偏移数据,打印字符下半段
                 if (IIC_Wire->write((ASCII_0806[chr - ' '][count]) >> (SSD1306_PAGE_POS_WIDTH - pos_offest)) != IIC_ERROR_NONE)
