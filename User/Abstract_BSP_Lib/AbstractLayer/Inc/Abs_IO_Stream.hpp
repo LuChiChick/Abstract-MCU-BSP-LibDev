@@ -6,12 +6,14 @@ namespace cus
     //输入输出流错误枚举类型
     enum IO_Stream_Error
     {
-        IO_STREAM_ERROR_NONE,           //无错误
-        IO_STREAM_ERROR_UNINITED,       //未初始化
-        IO_STREAM_ERROR_PUTCHAR_FAILED, //输出字节失败
-        IO_STREAM_ERROR_GETCHAR_FAILED, //读取字节失败
-        IO_STREAM_ERROR_PRINTF_FAILED,  //格式化输出失败
-        IO_STREAM_ERROR_SCANF_FAILED,   //格式化输入失败
+        IO_STREAM_ERROR_NONE,                  //无错误
+        IO_STREAM_ERROR_UNINITED,              //未初始化
+        IO_STREAM_ERROR_PUTCHAR_FAILED,        //输出字节失败
+        IO_STREAM_ERROR_GETCHAR_FAILED,        //读取字节失败
+        IO_STREAM_ERROR_PRINTF_FAILED,         //格式化输出失败
+        IO_STREAM_ERROR_SCANF_FAILED,          //格式化输入失败
+        IO_STREAM_ERROR_CONNECTION_FAILED,     //连接渠道失败（硬件上的错误等等）
+        IO_STREAM_ERROR_IMPLEMENT_LAYER_FAILD, //实现层出现错误
     };
 
     //抽象输出流，提供printf及<<重定向运算
