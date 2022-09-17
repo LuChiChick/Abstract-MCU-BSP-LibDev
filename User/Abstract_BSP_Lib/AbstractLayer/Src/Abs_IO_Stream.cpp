@@ -138,7 +138,7 @@ namespace cus
         }
 
         //处理常规值
-        if (num >= 0 && num < 10) //递归出口
+        if (num < 10) //递归出口
             return putchar('0' + num);
         else
         {
@@ -160,8 +160,10 @@ namespace cus
         if (printInteger((int)(num * 1.0)) != IO_STREAM_ERROR_NONE)
             return IO_STREAM_ERROR_PRINTF_FAILED;
 
+        //去掉已经打印的整数部分
         num = num - (int)num;
 
+        //打印小数点
         if (putchar('.') != IO_STREAM_ERROR_NONE)
             return IO_STREAM_ERROR_PUTCHAR_FAILED;
 
@@ -171,7 +173,7 @@ namespace cus
         //忽略数部分前进保留位到整数后多余的0
         while ((int)num % 10 == 0 && (int)num != 0)
             num = (int)num / 10;
-        //处理正负号
+        //处理正负号，前面打印整数部分时已经带符号了
         if (num < 0)
             num = -num;
         return printInteger((int)num);
