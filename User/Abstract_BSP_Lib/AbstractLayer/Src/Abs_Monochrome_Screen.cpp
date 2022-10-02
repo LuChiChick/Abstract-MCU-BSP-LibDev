@@ -23,6 +23,8 @@ namespace cus
 
         //未正确初始化
         isInit_already = false;
+
+        // 后续内容需要在派生子类中实现
         // SCREEN_X 信息初始化;
         // SCREEN_Y 信息初始化;
     }
@@ -51,6 +53,53 @@ namespace cus
         return MONOCHROME_SCREEN_ERROR_NONE;
     }
 
+    /**
+     * 缓存字符数据到轻量级缓冲区指定位置，将缓冲区当成一个二维字符矩阵使用
+     * @param x_offest X坐标，需取整
+     * @param y_offest Y坐标，需取整
+     * @param data 需要缓存的数据
+     * @return 无
+     */
+    Monochrome_Screen_Error Abs_Monochrome_Screen::save_Char_To_Buffer(uint16_t x_offest, uint16_t y_offest, char chr)
+    {
+        if (buffer != NULL)
+        {
+            //若是全页缓存则应该在draw_IMG_at中缓存
+            if (isFullBuffer)
+                return MONOCHROME_SCREEN_ERROR_NONE;
+            else
+                // 轻量级字符缓冲区，用于最小资源实现控制台缓冲翻页滚动
+                // buffer用作字符缓存，每行存储SCREEN_X / Font_PosLength个字，变相二维数组
+                // buffer [第0行][字1，字2，字3........] 共(SCREEN_X / Font_PosLength) 个字
+                // buffer [第1行][字1，字2，字3........] 共(SCREEN_X / Font_PosLength) 个字
+                // 以此类推，总共有（SCREEN_Y / Font_PosWidth） 行
+                // buffer共可存储 (SCREEN_Y / Font_PosWidth) * (SCREEN_X / Font_PosLength) 个字
+                // 前期有使用二维指针强转的方式实现buffer二维数组化使用，但是天杀的Keil不能编译所以妥协一下
+                buffer[(y_offest / Font_PosWidth) * (SCREEN_X / Font_PosLength) + (x_offest / Font_PosLength)] = (uint8_t)chr;
+
+            return MONOCHROME_SCREEN_ERROR_NONE;
+        }
+        //没有缓冲区
+        return MONOCHROME_SCREEN_ERROR_NOBUFFER;
+    }
+
+    /**
+     * 缓存图片到缓冲区指定位置
+     * @param x_offest X坐标
+     * @param y_offest y坐标
+     * @param length 图片像素长度
+     * @param width 图片像素宽度
+     * @param IMG_Arr 图片数组
+     * @return Monochrome_Screen_Error错误异常抛出
+     */
+    Monochrome_Screen_Error Abs_Monochrome_Screen::save_IMG_To_Buffer(uint16_t x_offest, uint16_t y_offest, uint16_t length, uint16_t width, const uint8_t *IMG_Arr)
+    {
+        //查询缓冲区状态
+        if (isFullBuffer)
+            return MONOCHROME_SCREEN_ERROR_FUNCTION_UNREALIZED;
+        else
+            return MONOCHROME_SCREEN_ERROR_NO_FULLBUFFER;
+    }
     /**
      * 输出一个字节数据
      * @param chr 需要输出的字节数据
@@ -126,6 +175,9 @@ namespace cus
         if (y_offest >= SCREEN_Y)
             return MONOCHROME_SCREEN_ERROR_OUT_OF_RANGE_Y;
 
+        if (chr == '\0' || chr == '\n')
+            return MONOCHROME_SCREEN_ERROR_NONE;
+
         //在指定位置输出字符图像
         return draw_IMG_at(cursor_X, cursor_Y, Font_PosLength, Font_PosWidth, &font_Family[chr - ' ']);
     }
@@ -139,9 +191,10 @@ namespace cus
      */
     Monochrome_Screen_Error Abs_Monochrome_Screen::draw_IMG(uint16_t length, uint16_t width, const uint8_t *IMG_Arr)
     {
-        //换行输出到下行首
-        if (putchar('\n') != IO_STREAM_ERROR_NONE)
-            return MONOCHROME_SCREEN_ERROR_OUTSTREAM_FAILED;
+        //检查是否在行首，否则换行再输出
+        if (cursor_X != 0)
+            if (putchar('\n') != IO_STREAM_ERROR_NONE)
+                return MONOCHROME_SCREEN_ERROR_OUTSTREAM_FAILED;
 
         return draw_IMG_at(cursor_X, cursor_Y, length, width, IMG_Arr);
     }
@@ -156,6 +209,135 @@ namespace cus
         // temp
         return MONOCHROME_SCREEN_ERROR_NONE;
     }
+
+    /**
+     * 获取建议的缓冲区大小
+     * @param isFullBuffer 是否全页缓存
+     * @return 建议的缓冲区长度(uint8_t)
+     */
+    uint16_t Abs_Monochrome_Screen::get_Suggested_Buffer_Size(bool isFullBuffer)
+    {
+        if (isFullBuffer)
+            return SCREEN_X * (SCREEN_Y / 8 + (SCREEN_Y % 8 == 0 ? 0 : 1)); //全页缓存
+        else
+            return (SCREEN_Y / Font_PosWidth) * (SCREEN_X / Font_PosLength); //轻量级缓存
+    }
+
+    /**
+     * 指定位置格式化输出
+     * @param x_offest x坐标
+     * @param y_offest y坐标
+     * @param lpFormatString 格式化输出字符串
+     * @param ... 要打印的内容参数，支持如下:
+     * @param -%d 输出整数
+     * @param -%f 输出浮点数
+     * @param -%s 输出字符串
+     * @param -%c 输出字符
+     * @return Monochrome_Screen_Error错误异常抛出
+     */
+    Monochrome_Screen_Error Abs_Monochrome_Screen::printf_at(uint16_t x_offest, uint16_t y_offest, const char *lpFormatString, ...)
+    {
+        //初始化参数列表，指向不定参第一个参数
+        va_list args;
+        va_start(args, lpFormatString);
+
+        //临时打印坐标记录
+        uint8_t temp_cursor_X = x_offest;
+        uint8_t temp_cursor_Y = y_offest;
+
+        //轮询数据
+        while (*lpFormatString != '\0')
+        {
+            //换行审查
+            if (*lpFormatString == '\n') //检查换行符
+            {
+                temp_cursor_X = x_offest;
+                temp_cursor_Y += Font_PosWidth;
+                //页越界审查
+                if (temp_cursor_Y >= SCREEN_Y)
+                    return MONOCHROME_SCREEN_ERROR_OUT_OF_RANGE_Y;
+                lpFormatString++;
+                continue;
+            }
+            //越界审查
+            else if (temp_cursor_X + Font_PosLength >= SCREEN_X)
+            {
+                temp_cursor_X = x_offest;
+                temp_cursor_Y += Font_PosWidth;
+                if (temp_cursor_Y >= SCREEN_Y)
+                    return MONOCHROME_SCREEN_ERROR_OUT_OF_RANGE_Y;
+                else
+                    continue;
+            }
+            else if (*lpFormatString == '%') //筛查格式化标签
+            {
+                switch (*(lpFormatString + 1))
+                {
+                // //数型
+                // case 'd':
+                //     if (drawInteger_at(temp_cursor_X, temp_cursor_X, va_arg(args, int)) != MONOCHROME_SCREEN_ERROR_NONE)
+                //         return MONOCHROME_SCREEN_ERROR_OUTSTREAM_FAILED;
+                //     //跃迁格式化字符串指针
+                //     lpFormatString += 2;
+                //     //继续下一个检测
+                //     continue;
+                // case 'f':
+                //     if (drawDecimal_at(temp_cursor_X, temp_cursor_X, va_arg(args, double)) != MONOCHROME_SCREEN_ERROR_NONE)
+                //         return MONOCHROME_SCREEN_ERROR_OUTSTREAM_FAILED;
+                //     //跃迁格式化字符串指针
+                //     lpFormatString += 2;
+                //     //继续下一个检测
+                //     continue;
+                // case 's':
+                //     if (drawString_at(temp_cursor_X, temp_cursor_X, va_arg(args, const uint8_t *)) != MONOCHROME_SCREEN_ERROR_NONE)
+                //         return MONOCHROME_SCREEN_ERROR_OUTSTREAM_FAILED;
+                //     //跃迁格式化字符串指针
+                //     lpFormatString += 2;
+                //     //继续下一个检测
+                //     continue;
+                case 'c':
+                    if (putchar_at(temp_cursor_X, temp_cursor_X, (uint8_t)va_arg(args, int)) != MONOCHROME_SCREEN_ERROR_NONE)
+                        return MONOCHROME_SCREEN_ERROR_OUTSTREAM_FAILED;
+                    //增加X指针
+                    temp_cursor_X += Font_PosLength;
+                    //边界换行审查
+                    if (temp_cursor_X >= SCREEN_X)
+                    {
+                        if (temp_cursor_Y + Font_PosWidth >= SCREEN_Y)
+                            return MONOCHROME_SCREEN_ERROR_OUT_OF_RANGE_Y;
+                        else
+                            temp_cursor_Y += SCREEN_Y;
+                        //既然已经发生换行，代表字符输出到了下一行0位
+                        temp_cursor_X = x_offest + Font_PosLength;
+                    }
+
+                    //跃迁格式化字符串指针
+                    lpFormatString += 2;
+                    //继续下一个检测
+                    continue;
+                //不在检测范围内的标签
+                default:
+                    break;
+                }
+            }
+            if (putchar_at(temp_cursor_X, temp_cursor_X, *(lpFormatString++)) != MONOCHROME_SCREEN_ERROR_NONE) //打印并更新指针
+                return MONOCHROME_SCREEN_ERROR_OUTSTREAM_FAILED;
+            temp_cursor_X += Font_PosLength;
+        }
+        return MONOCHROME_SCREEN_ERROR_NONE;
+    }
+
+    /**
+     * 指定位置绘制像素点
+     * @param x_offest X坐标
+     * @param y_offest Y坐标
+     * @return Monochrome_Screen_Error错误异常抛出
+     */
+    Monochrome_Screen_Error Abs_Monochrome_Screen::draw_Pixel_at(uint16_t x_offest, uint16_t y_offest)
+    {
+        return MONOCHROME_SCREEN_ERROR_FUNCTION_UNREALIZED;
+    }
+
 }
 
 //单色屏资源区，字体及图像

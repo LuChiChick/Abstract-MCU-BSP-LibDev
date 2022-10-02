@@ -22,25 +22,8 @@ namespace dev
          */
         Monochrome_Screen_Error set_Brush_Position(uint16_t x_offest, uint16_t page_offest);
 
-        /**
-         * 绘制字符到缓存
-         * @param chr 缓存的字符
-         */
-        void draw_Char_ToBuffer(char chr);
-
-        /**
-         * 绘制字符到缓存
-         * @param chr 缓存的字符
-         * @param x_offest X坐标
-         * @param y_offest Y坐标
-         */
-        void draw_Char_ToBuffer_at(uint16_t x_offest, uint16_t y_offest, char chr);
-
     protected:
-
         Abs_IIC_Master *IIC_Wire; // IIC通信类实例
-
-        uint16_t SCREEN_PAGE_COUNT; //屏幕竖向页，8像素点为一页
 
         /**
          * 初始化屏幕
@@ -77,23 +60,6 @@ namespace dev
         virtual Monochrome_Screen_Error clear();
 
         /**
-         * 指定位置绘制像素点
-         * @param x_offest X坐标
-         * @param y_offest Y坐标
-         * @return Monochrome_Screen_Error错误异常抛出
-         */
-        virtual Monochrome_Screen_Error draw_Pixel_at(uint16_t x_offest, uint16_t y_offest);
-
-        /**
-         * 指定坐标打印字符
-         * @param x_offest x坐标
-         * @param y_offest y坐标
-         * @param chr 输出字符
-         * @return Monochrome_Screen_Error错误异常抛出
-         */
-        virtual Monochrome_Screen_Error putchar_at(uint16_t x_offest, uint16_t y_offest, const char chr);
-
-        /**
          * 指定位置输出图片
          * @param x_offest X坐标
          * @param y_offest y坐标
@@ -103,15 +69,6 @@ namespace dev
          * @return Monochrome_Screen_Error错误异常抛出
          */
         virtual Monochrome_Screen_Error draw_IMG_at(uint16_t x_offest, uint16_t y_offest, uint16_t length, uint16_t width, const uint8_t *IMG_Arr);
-
-        /**
-         * 向默认位置(0,0)绘制图形
-         * @param length 图片像素长度
-         * @param width 图片像素宽度
-         * @param IMG_Arr 图片数组,每列8位点阵,字节垂直数据水平
-         * @return Monochrome_Screen_Error错误异常抛出
-         */
-        virtual Monochrome_Screen_Error draw_IMG(uint16_t length, uint16_t width, const uint8_t *IMG_Arr);
     };
 }
 

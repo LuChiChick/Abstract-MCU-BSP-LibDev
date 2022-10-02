@@ -45,7 +45,7 @@ namespace cus
         uint8_t *buffer;   //缓冲区地址
 
         bool Pixel_Color_Reverse; //笔刷反色
-        bool Pixel_Overlay;       //像素颜色覆盖（即0值是否透明）
+        bool Pixel_Overlay;       //像素颜色覆盖（即像素点0值是否会强制覆盖其下方的有色1值像素点）
 
         /**
          * 初始化屏幕
@@ -60,7 +60,18 @@ namespace cus
          * @param data 需要缓存的数据
          * @return 无
          */
-        virtual void save_Char_To_Buffer(uint16_t x_offest, uint16_t y_offest, char chr);
+        virtual Monochrome_Screen_Error save_Char_To_Buffer(uint16_t x_offest, uint16_t y_offest, char chr);
+
+        /**
+         * 缓存图片到缓冲区指定位置
+         * @param x_offest X坐标
+         * @param y_offest y坐标
+         * @param length 图片像素长度
+         * @param width 图片像素宽度
+         * @param IMG_Arr 图片数组
+         * @return Monochrome_Screen_Error错误异常抛出
+         */
+        virtual Monochrome_Screen_Error save_IMG_To_Buffer(uint16_t x_offest, uint16_t y_offest, uint16_t length, uint16_t width, const uint8_t *IMG_Arr);
 
     public:
         //默认构造函数
@@ -100,7 +111,7 @@ namespace cus
          * @param y_offest Y坐标
          * @return Monochrome_Screen_Error错误异常抛出
          */
-        virtual Monochrome_Screen_Error draw_Pixel_at(uint16_t x_offest, uint16_t y_offest) = 0;
+        virtual Monochrome_Screen_Error draw_Pixel_at(uint16_t x_offest, uint16_t y_offest);
 
         /**
          * 向默认位置(0,0)绘制图形
