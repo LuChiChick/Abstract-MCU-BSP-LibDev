@@ -40,11 +40,11 @@
 !User/Implements/STM32_HAL/Src/**
 
 #MSP432实现层
-!User/Implements/MSP432
-!User/Implements/MSP432/Inc/
-!User/Implements/MSP432/Src/
-!User/Implements/MSP432/Inc/**
-!User/Implements/MSP432/Src/**
+!User/Implements/MSP432_DriverLib
+!User/Implements/MSP432_DriverLib/Inc/
+!User/Implements/MSP432_DriverLib/Src/
+!User/Implements/MSP432_DriverLib/Inc/**
+!User/Implements/MSP432_DriverLib/Src/**
 
 #忽略文件
 !.gitignore
