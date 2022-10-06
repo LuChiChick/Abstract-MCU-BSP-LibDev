@@ -78,7 +78,7 @@ namespace cus
                 // buffer [第1行][字1，字2，字3........] 共(SCREEN_X / Font_PosLength) 个字
                 // 以此类推，总共有（SCREEN_Y / Font_PosWidth） 行
                 // buffer共可存储 (SCREEN_Y / Font_PosWidth) * (SCREEN_X / Font_PosLength) 个字
-                // 前期有使用二维指针强转的方式实现buffer二维数组化使用，但是天杀的Keil不能编译所以妥协一下
+                // 前期有使用二维指针强转的方式实现buffer二维数组化使用，但是为了某些只支持C99标准的编译器妥协一下
                 buffer[(y_offest / Font_PosWidth) * (SCREEN_X / Font_PosLength) + (x_offest / Font_PosLength)] = (uint8_t)chr;
 
             return MONOCHROME_SCREEN_ERROR_NONE;
@@ -104,6 +104,7 @@ namespace cus
         else
             return MONOCHROME_SCREEN_ERROR_NO_FULLBUFFER;
     }
+
     /**
      * 输出一个字节数据
      * @param chr 需要输出的字节数据
@@ -210,7 +211,17 @@ namespace cus
      */
     Monochrome_Screen_Error Abs_Monochrome_Screen::screen_Roll(uint16_t pos_count)
     {
-        // temp
+        if (buffer == NULL) //无缓冲区直接刷新后返回
+            return clear();
+        else if (isFullBuffer) //全缓冲平移像素点
+        {
+            //输出缓冲区内容并返回
+            return draw_IMG_at(0, 0, SCREEN_X, SCREEN_Y, buffer);
+        }
+        else //无缓冲处理精简缓冲区
+        {
+            
+        }
         return MONOCHROME_SCREEN_ERROR_NONE;
     }
 
@@ -225,6 +236,14 @@ namespace cus
             return SCREEN_X * (SCREEN_Y / 8 + (SCREEN_Y % 8 == 0 ? 0 : 1)); //全页缓存
         else
             return (SCREEN_Y / Font_PosWidth) * (SCREEN_X / Font_PosLength); //轻量级缓存
+
+        // 轻量级字符缓冲区，用于最小资源实现控制台缓冲翻页滚动
+        // buffer用作字符缓存，每行存储SCREEN_X / Font_PosLength个字，变相二维数组
+        // buffer [第0行][字1，字2，字3........] 共(SCREEN_X / Font_PosLength) 个字
+        // buffer [第1行][字1，字2，字3........] 共(SCREEN_X / Font_PosLength) 个字
+        // 以此类推，总共有（SCREEN_Y / Font_PosWidth） 行
+        // buffer共可存储 (SCREEN_Y / Font_PosWidth) * (SCREEN_X / Font_PosLength) 个字
+        // 前期有使用二维指针强转的方式实现buffer二维数组化使用，但是为了某些只支持C99标准的编译器妥协一下
     }
 
     /**
