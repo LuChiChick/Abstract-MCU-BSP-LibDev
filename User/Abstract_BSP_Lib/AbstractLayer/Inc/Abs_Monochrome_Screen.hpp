@@ -34,7 +34,7 @@ namespace cus
         uint16_t SCREEN_X; //屏幕长
         uint16_t SCREEN_Y; //屏幕宽
 
-        const uint8_t *font_Family; //字体族指针地址，用以调取字体资源
+        const uint8_t *Font_Family; //字体族指针地址，用以调取字体资源
         uint8_t Font_PosLength;     //当前字体像素长度
         uint8_t Font_PosWidth;      //当前像素宽度
 
@@ -100,10 +100,12 @@ namespace cus
 
         /**
          * 设置字体族
-         * @param font_Family 字体族数据组指针地址
+         * @param Font_Family 字体族数据组指针地址
+         * @param Font_PosLength 字体像素长度
+         * @param Font_PosWidth  字体像素宽度
          * @return Monochrome_Screen_Error错误异常抛出
          */
-        virtual Monochrome_Screen_Error set_Font_Family(uint8_t *font_Family);
+        virtual Monochrome_Screen_Error set_Font_Family(const uint8_t *Font_Family, uint8_t Font_PosLength, uint8_t Font_PosWidth);
 
         /**
          * 指定位置绘制像素点
@@ -161,7 +163,7 @@ namespace cus
          * @param pos_count 滚动像素点计数
          * @return SSD1306_Error异常抛出
          */
-        virtual Monochrome_Screen_Error screenRoll(uint16_t pos_count);
+        virtual Monochrome_Screen_Error screen_Roll(uint16_t pos_count);
 
         /**
          * 获取建议的缓冲区大小

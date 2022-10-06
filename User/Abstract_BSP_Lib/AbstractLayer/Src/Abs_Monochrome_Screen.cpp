@@ -8,9 +8,7 @@ namespace cus
     Abs_Monochrome_Screen::Abs_Monochrome_Screen()
     {
         //字体族相关设置
-        font_Family = (const uint8_t *)Monochrome_Screen_Resources::ASCII_0806;
-        Font_PosWidth = 8;
-        Font_PosLength = 6;
+        set_Font_Family((const uint8_t *)Monochrome_Screen_Resources::ASCII_0806, 6, 8);
         //屏幕输出指针设置
         cursor_X = 0;
         cursor_Y = 0;
@@ -31,11 +29,17 @@ namespace cus
 
     /**
      * 设置字体族
-     * @param font_Family 字体族数据组指针地址
+     * @param Font_Family 字体族数据组指针地址
      * @return Monochrome_Screen_Error错误异常抛出
      */
-    Monochrome_Screen_Error Abs_Monochrome_Screen::set_Font_Family(uint8_t *font_Family)
+    Monochrome_Screen_Error Abs_Monochrome_Screen::set_Font_Family(const uint8_t *Font_Family, uint8_t Font_PosLength, uint8_t Font_PosWidth)
     {
+
+        //设置为默认值
+        this->Font_Family = (const uint8_t *)Monochrome_Screen_Resources::ASCII_0806;
+        this->Font_PosLength = 6;
+        this->Font_PosWidth = 8;
+
         //返回功能未实现
         return MONOCHROME_SCREEN_ERROR_FUNCTION_UNREALIZED;
     }
@@ -120,7 +124,7 @@ namespace cus
             //正好指针越界，屏幕滚动字体宽度单位像素
             if (cursor_Y + Font_PosWidth >= SCREEN_Y)
             {
-                if (screenRoll(Font_PosWidth) != MONOCHROME_SCREEN_ERROR_NONE)
+                if (screen_Roll(Font_PosWidth) != MONOCHROME_SCREEN_ERROR_NONE)
                     return IO_STREAM_ERROR_IMPLEMENT_LAYER_FAILD;
             }
             else
@@ -179,7 +183,7 @@ namespace cus
             return MONOCHROME_SCREEN_ERROR_NONE;
 
         //在指定位置输出字符图像
-        return draw_IMG_at(cursor_X, cursor_Y, Font_PosLength, Font_PosWidth, &font_Family[chr - ' ']);
+        return draw_IMG_at(cursor_X, cursor_Y, Font_PosLength, Font_PosWidth, &Font_Family[chr - ' ']);
     }
 
     /**
@@ -204,7 +208,7 @@ namespace cus
      * @param pos_count 滚动像素点计数
      * @return SSD1306_Error异常抛出
      */
-    Monochrome_Screen_Error Abs_Monochrome_Screen::screenRoll(uint16_t pos_count)
+    Monochrome_Screen_Error Abs_Monochrome_Screen::screen_Roll(uint16_t pos_count)
     {
         // temp
         return MONOCHROME_SCREEN_ERROR_NONE;
