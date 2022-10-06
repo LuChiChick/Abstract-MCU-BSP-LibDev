@@ -8,6 +8,7 @@ namespace cus
         //默认为5位小数保留
         DECIMAL_HOLD_MAX = 5;
     }
+
     /**
      *   格式化输出默认实现
      *   @param lpFormatString 格式化输出字符串
