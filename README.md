@@ -47,7 +47,7 @@
         │   │           ├─Servo.cpp                     舵机控制类库具体实现
         │   │           └─SSD1306.cpp                   SSD1306单色OLED驱动类库具体实现
         │   └─Implements                具体平台实现层
-        │       ├─MSP432                MSP432_DriverLib实现
+        │       ├─MSP432_DriverLib      MSP432_DriverLib实现
         │       │   ├─Inc                   
         │       │   │   ├─MSP432_GPIO_Wire.hpp          MSP432_GPIO类库
         │       │   │   ├─MSP432_IRQ_Handler.hpp        MSP432中断处理相关函数库
